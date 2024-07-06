@@ -12,25 +12,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Friend {
     @Id
-    @Column(name = "friendId", updatable = false)
+    @Column(name = "friendTableId", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long friendId;
+    private Long friendTableId;
 
     @ManyToOne
-    @JoinColumn(name = "fromUserId", updatable = false, nullable = false)
-    private User fromUser;
+    @JoinColumn(name = "userId", updatable = false, nullable = false)
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "toUserId", updatable = false, nullable = false)
-    private User toUser;
+    @JoinColumn(name = "friendId", updatable = false, nullable = false)
+    private User friend;
 
     @Column(nullable = false)
     private Boolean isConfirmed;
 
     @Builder
-    public Friend(User fromUser, User toUser, Boolean isConfirmed) {
-        this.fromUser = fromUser;
-        this.toUser = toUser;
+    public Friend(User user, User friend, Boolean isConfirmed) {
+        this.user = user;
+        this.friend = friend;
         this.isConfirmed = isConfirmed;
     }
 }
