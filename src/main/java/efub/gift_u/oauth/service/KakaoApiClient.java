@@ -1,5 +1,6 @@
 package efub.gift_u.oauth.service;
 
+import efub.gift_u.oauth.dto.KakaoInfoWithTokenDto;
 import efub.gift_u.oauth.dto. KakaoTokens;
 import efub.gift_u.oauth.dto.KakaoInfoResponse;
 import efub.gift_u.user.repository.UserRepository;
@@ -25,20 +26,20 @@ public class KakaoApiClient {
     private String clientSecret;
 
     @Value("${spring.oauth.kakao.url.auth}")
-    private String authUrl;
+    private String authUri;
 
     @Value("${spring.oauth.kakao.url.api}")
-    private String apiUrl;
+    private String apiUri;
 
     @Value("${spring.oauth.kakao.redirect-uri}")
-    private String redirectUrl;
+    private String redirectUri;
 
     private final RestTemplate restTemplate;
 
 
     // 액세스 토큰 가져오는 메서드
     public String getAccessToken(String code) {
-        String url = authUrl + "/oauth/token";
+        String url = authUri + "/oauth/token";
 
         // 요청 헤더 설정
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -49,7 +50,7 @@ public class KakaoApiClient {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUrl);
+        body.add("redirect_uri", redirectUri);
         body.add("code",code);
         body.add("client_secret", clientSecret);
 
@@ -69,8 +70,8 @@ public class KakaoApiClient {
 
 
     // 사용자 정보 가져오는 메서드
-    public KakaoInfoResponse getUserInfo(String accessToken) {
-        String url = apiUrl + "/v2/user/me";
+    public KakaoInfoWithTokenDto getUserInfo(String accessToken) {
+        String url = apiUri + "/v2/user/me";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -81,7 +82,9 @@ public class KakaoApiClient {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, httpHeaders);
 
-        return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
+        KakaoInfoResponse kakaoInfoResponse = restTemplate.postForObject(url, request, KakaoInfoResponse.class);
+
+        return new KakaoInfoWithTokenDto(kakaoInfoResponse, accessToken);
     }
 
 }

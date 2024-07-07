@@ -1,6 +1,7 @@
 package efub.gift_u.oauth.service;
 
 import efub.gift_u.oauth.dto.KakaoInfoResponse;
+import efub.gift_u.oauth.dto.KakaoInfoWithTokenDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,7 +12,7 @@ public class RequestOAuthInfoService {
         this.clients = clients;
     }
 
-    public KakaoInfoResponse request(String code) {
+    public KakaoInfoWithTokenDto request(String code) {
         String accessToken = clients.getAccessToken(code);
         return clients.getUserInfo(accessToken);
     }

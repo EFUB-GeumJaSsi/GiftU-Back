@@ -36,6 +36,9 @@ public class User {
     @Column
     private String userImageUrl;
 
+    @Column
+    private String kakaoAccessToken;
+
     @OneToMany(mappedBy = "friendTableId", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Friend> friendList = new ArrayList<>();
 
@@ -49,10 +52,18 @@ public class User {
     List<Funding> fundingList = new ArrayList<>();
 
     @Builder
-    public User(String nickname, String email, Date birthday, String userImageUrl) {
+    public User(String nickname, String email, Date birthday, String userImageUrl, String kakaoAccessToken) {
         this.nickname = nickname;
         this.email = email;
         this.birthday = birthday;
         this.userImageUrl = userImageUrl;
+        this.kakaoAccessToken = kakaoAccessToken;
+    }
+
+    // 액세스 토큰 업데이트
+    public void updateKakaoAccessToken(String kakaoAccessToken) {
+        this.kakaoAccessToken = kakaoAccessToken;
+        System.out.println("엔티티 부분" + kakaoAccessToken);
+        System.out.println("check!!" + this.kakaoAccessToken);
     }
 }
