@@ -21,5 +21,4 @@ public class OAuthController {
         return ResponseEntity.ok(oAuthLoginService.login(code));
     }
 
-
 }

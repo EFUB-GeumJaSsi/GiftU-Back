@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KakaoInfoResponse {
+public class KakaoInfoResponseDto {
 
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
@@ -20,7 +20,5 @@ public class KakaoInfoResponse {
     public String getEmail() {
         return kakaoAccount.email;
     }
-
-
 
 }

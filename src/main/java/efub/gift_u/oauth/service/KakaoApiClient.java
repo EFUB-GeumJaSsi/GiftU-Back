@@ -1,9 +1,7 @@
 package efub.gift_u.oauth.service;
 
-import efub.gift_u.oauth.dto.KakaoInfoWithTokenDto;
 import efub.gift_u.oauth.dto. KakaoTokens;
-import efub.gift_u.oauth.dto.KakaoInfoResponse;
-import efub.gift_u.user.repository.UserRepository;
+import efub.gift_u.oauth.dto.KakaoInfoResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -17,27 +15,20 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class KakaoApiClient {
 
-    private final UserRepository userRepository;
-
     @Value("${spring.oauth.kakao.client-id}")
     private String clientId;
-
     @Value("${spring.oauth.kakao.client-secret}")
     private String clientSecret;
-
     @Value("${spring.oauth.kakao.url.auth}")
     private String authUri;
-
     @Value("${spring.oauth.kakao.url.api}")
     private String apiUri;
-
     @Value("${spring.oauth.kakao.redirect-uri}")
     private String redirectUri;
 
     private final RestTemplate restTemplate;
 
-
-    // 액세스 토큰 가져오는 메서드
+    // 액세스 토큰 가져오는 메서드 //
     public String getAccessToken(String code) {
         String url = authUri + "/oauth/token";
 
@@ -69,8 +60,8 @@ public class KakaoApiClient {
     }
 
 
-    // 사용자 정보 가져오는 메서드
-    public KakaoInfoWithTokenDto getUserInfo(String accessToken) {
+    // 사용자 정보 가져오는 메서드 //
+    public KakaoInfoResponseDto getUserInfo(String accessToken) {
         String url = apiUri + "/v2/user/me";
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -82,9 +73,7 @@ public class KakaoApiClient {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, httpHeaders);
 
-        KakaoInfoResponse kakaoInfoResponse = restTemplate.postForObject(url, request, KakaoInfoResponse.class);
-
-        return new KakaoInfoWithTokenDto(kakaoInfoResponse, accessToken);
+        return restTemplate.postForObject(url, request, KakaoInfoResponseDto.class);
     }
 
 }

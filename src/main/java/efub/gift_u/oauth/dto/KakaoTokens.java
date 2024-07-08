@@ -2,12 +2,9 @@ package efub.gift_u.oauth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-//@Setter
 @ToString
 public class KakaoTokens {
 
