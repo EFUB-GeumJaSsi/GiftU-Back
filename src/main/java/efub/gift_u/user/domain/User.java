@@ -63,7 +63,6 @@ public class User {
     // 액세스 토큰 업데이트
     public void updateKakaoAccessToken(String kakaoAccessToken) {
         this.kakaoAccessToken = kakaoAccessToken;
-        System.out.println("엔티티 부분" + kakaoAccessToken);
-        System.out.println("check!!" + this.kakaoAccessToken);
+        System.out.println(" 카카오 액세스 토큰" + kakaoAccessToken);
     }
 }
