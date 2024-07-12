@@ -19,8 +19,16 @@ public class UserController {
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public UserResponseDto getUser(@AuthUser User user){
-        Long userId = user.getUserId();
         return UserResponseDto.from(user);
     }
+
+    // 회원 정보 삭제
+    @DeleteMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public String deleteUser(@AuthUser User user) {
+        userService.deleteUser(user);
+        return "성공적으로 탈퇴되었습니다.(서비스 DB에서 정보 삭제)";
+    }
+
 }
 
