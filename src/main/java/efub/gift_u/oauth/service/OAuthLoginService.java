@@ -42,6 +42,7 @@ public class OAuthLoginService {
     private Long newUser(KakaoInfoResponseDto kakaoInfoResponseDto) {
         User user = User.builder()
                 .email(kakaoInfoResponseDto.getEmail())
+                .nickname(kakaoInfoResponseDto.getEmail())
                 .build();
         return userRepository.save(user).getUserId();
     }
@@ -52,4 +53,6 @@ public class OAuthLoginService {
         user.updateKakaoAccessToken(kakaoAccessToken);
         userRepository.save(user);
     }
+
+    //
 }
