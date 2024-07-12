@@ -1,20 +1,22 @@
 package efub.gift_u.oauth.jwt;
 
 import efub.gift_u.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import efub.gift_u.user.repository.UserRepository;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 
-@Component
+@Service
+@Slf4j
 public class JwtService {
 
     private static final String BEARER_TYPE = "Bearer";
@@ -46,6 +48,7 @@ public class JwtService {
                 .compact();
     }
 
+
     // 토큰에서 subject(userId) 추출
     public String extractSubject(String accessToken) {
         Claims claims = parseClaims(accessToken);
@@ -72,21 +75,21 @@ public class JwtService {
     }
 
     // 토큰 검증 //
-    public ErrorCode validateToken(String accessToken) {
+    public boolean validateToken(String accessToken) {
         try {
             var claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(accessToken);
-            if (claims.getBody().getExpiration().before(new Date())) {
-                return ErrorCode.FAIL_AUTHENTICATION; // 토큰 검증 실패
-            }
-            return null; // 토큰 검증 성공
+            return !claims.getBody().getExpiration().before(new Date()); // 만료일자가 현재 날짜 이전인지 확인
         } catch (ExpiredJwtException e) {
-            return ErrorCode.TOKEN_EXPIRED; // 토큰 만료
+            log.info(String.valueOf(ErrorCode.TOKEN_EXPIRED)); // 토큰 만료
+        } catch (JwtException e) {
+            log.info(String.valueOf(ErrorCode.INVALID_TOKEN)); // 유효하지 않는 토큰
         } catch (Exception e) {
-            return ErrorCode.FAIL_AUTHENTICATION; // 토큰 검증 실패
+            log.info(String.valueOf(ErrorCode.FAIL_AUTHENTICATION)); // 토큰 검증 실패
         }
+        return false;
     }
 
     // 요청에서 토큰 추출하기 //
