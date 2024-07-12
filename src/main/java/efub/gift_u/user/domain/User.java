@@ -24,7 +24,7 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(length = 16)
+    @Column(nullable = false, unique = true, length = 16)
     private String nickname;
 
     @Column(updatable = false)
@@ -36,8 +36,8 @@ public class User {
     @Column
     private String userImageUrl;
 
-    @OneToMany(mappedBy = "friendTableId", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Friend> friendList = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Friend> friendList = new ArrayList<>();
 
     @OneToMany(mappedBy = "noticeId", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Notice> noticeList = new ArrayList<>();

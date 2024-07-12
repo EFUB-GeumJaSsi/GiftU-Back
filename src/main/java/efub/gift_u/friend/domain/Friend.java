@@ -16,21 +16,30 @@ public class Friend {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long friendTableId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", updatable = false, nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "friendId", updatable = false, nullable = false)
     private User friend;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean isConfirmed;
+    private FriendStatus status;
 
     @Builder
-    public Friend(User user, User friend, Boolean isConfirmed) {
+    public Friend(User user, User friend, FriendStatus status) {
         this.user = user;
         this.friend = friend;
-        this.isConfirmed = isConfirmed;
     }
+
+    public void accept() {
+        this.status = FriendStatus.ACCEPTED;
+    }
+
+    public void reject() {
+        this.status = FriendStatus.REJECTED;
+    }
+
 }
