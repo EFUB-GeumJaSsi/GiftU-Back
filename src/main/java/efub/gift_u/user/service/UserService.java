@@ -28,6 +28,10 @@ public class UserService {
 
     @Transactional
     public User updateUser(User user, UserUpdateRequestDto requestDto){
+        if (!user.getNickname().equals(requestDto.getNickname()) &&
+                userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
         user.updateUser(requestDto.getNickname(), requestDto.getBirthday(), requestDto.getUserImageUrl());
         return userRepository.save(user);
     }
