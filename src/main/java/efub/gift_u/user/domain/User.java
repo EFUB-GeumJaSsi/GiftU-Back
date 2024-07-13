@@ -24,20 +24,27 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(length = 16)
+    @Column(length = 50, unique = true) //닉네임은 중복 불가
     private String nickname;
 
     @Column(updatable = false)
     private String email;
 
+    @Temporal(TemporalType.DATE) // 날짜 형식으로 지정
     @Column
     private Date birthday;
 
     @Column
     private String userImageUrl;
 
-    @OneToMany(mappedBy = "friendTableId", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Friend> friendList = new ArrayList<>();
+    @Column
+    private String kakaoAccessToken;
+
+    @OneToMany(mappedBy = "firstUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friend> friendsAsFirstUser = new ArrayList<>();
+
+    @OneToMany(mappedBy = "secondUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friend> friendsAsSecondUser = new ArrayList<>();
 
     @OneToMany(mappedBy = "noticeId", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Notice> noticeList = new ArrayList<>();
@@ -49,10 +56,26 @@ public class User {
     List<Funding> fundingList = new ArrayList<>();
 
     @Builder
-    public User(String nickname, String email, Date birthday, String userImageUrl) {
+    public User(String nickname, String email, Date birthday, String userImageUrl, String kakaoAccessToken) {
         this.nickname = nickname;
         this.email = email;
         this.birthday = birthday;
         this.userImageUrl = userImageUrl;
+        this.kakaoAccessToken = kakaoAccessToken;
     }
+
+    // 액세스 토큰 업데이트
+    public void updateKakaoAccessToken(String kakaoAccessToken) {
+        this.kakaoAccessToken = kakaoAccessToken;
+        System.out.println(" 카카오 액세스 토큰" + kakaoAccessToken);
+    }
+
+    // 회원 정보 수정
+    public void updateUser(String nickname, Date birthday, String userImageUrl){
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.userImageUrl = userImageUrl;
+    }
+
 }
+
