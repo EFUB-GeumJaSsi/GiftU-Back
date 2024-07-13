@@ -24,7 +24,7 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(length = 16)
+    @Column(length = 50)
     private String nickname;
 
     @Column(updatable = false)
