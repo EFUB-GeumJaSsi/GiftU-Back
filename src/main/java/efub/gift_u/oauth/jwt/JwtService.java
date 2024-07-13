@@ -20,7 +20,7 @@ import java.util.Date;
 public class JwtService {
 
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 300; // 5시간
 
     private final Key key;
 
