@@ -66,4 +66,11 @@ public class User {
         System.out.println(" 카카오 액세스 토큰" + kakaoAccessToken);
     }
 
+    // 회원 정보 수정
+    public void updateUser(String nickname, Date birthday, String userImageUrl){
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.userImageUrl = userImageUrl;
+    }
+
 }

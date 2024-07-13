@@ -3,7 +3,9 @@ package efub.gift_u.user.controller;
 import efub.gift_u.oauth.customAnnotation.AuthUser;
 import efub.gift_u.user.domain.User;
 import efub.gift_u.user.dto.UserResponseDto;
+import efub.gift_u.user.dto.UserUpdateRequestDto;
 import efub.gift_u.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +17,23 @@ public class UserController {
 
     private final UserService userService;
 
-    // 회원 정보 조회
+    /* 회원 정보 조회 */
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public UserResponseDto getUser(@AuthUser User user){
         return UserResponseDto.from(user);
     }
 
-    // 회원 정보 삭제
+    /* 회원 정보 수정 */
+    @PatchMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public UserResponseDto updateUser(@AuthUser User user, @RequestBody @Valid final UserUpdateRequestDto requestDto) {
+        User findedUser = userService.updateUser(user, requestDto);
+        return UserResponseDto.from(findedUser);
+    }
+
+
+    /* 회원 정보 삭제 */
     @DeleteMapping
     @ResponseStatus(value = HttpStatus.OK)
     public String deleteUser(@AuthUser User user) {

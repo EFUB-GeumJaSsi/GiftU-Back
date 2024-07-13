@@ -1,5 +1,6 @@
 package efub.gift_u.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import efub.gift_u.user.domain.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ public class UserResponseDto {
     private Long userId;
     private String nickname;
     private String email;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date birthday;
     private String userImageUrl;
 
