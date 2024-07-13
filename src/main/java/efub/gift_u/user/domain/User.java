@@ -24,12 +24,13 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true) //닉네임은 중복 불가
     private String nickname;
 
     @Column(updatable = false)
     private String email;
 
+    @Temporal(TemporalType.DATE) // 날짜 형식으로 지정
     @Column
     private Date birthday;
 
@@ -39,8 +40,11 @@ public class User {
     @Column
     private String kakaoAccessToken;
 
-    @OneToMany(mappedBy = "friendTableId", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Friend> friendList = new ArrayList<>();
+    @OneToMany(mappedBy = "firstUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friend> friendsAsFirstUser = new ArrayList<>();
+
+    @OneToMany(mappedBy = "secondUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friend> friendsAsSecondUser = new ArrayList<>();
 
     @OneToMany(mappedBy = "noticeId", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Notice> noticeList = new ArrayList<>();
@@ -74,3 +78,4 @@ public class User {
     }
 
 }
+
