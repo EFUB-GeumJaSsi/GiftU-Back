@@ -69,7 +69,7 @@ public class Funding extends BaseTimeEntity {
     List<Gift> giftList = new ArrayList<>();
 
     @Builder
-    public Funding(User user, String fundingTitle, String fundingContent, Date fundingStartDate, Date fundingEndDate, String status, String deliveryAddress, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
+    public Funding(User user, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, String deliveryAddress, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
         this.user = user;
         this.fundingTitle = fundingTitle;
         this.fundingContent = fundingContent;
@@ -81,5 +81,6 @@ public class Funding extends BaseTimeEntity {
         this.password = password;
         this.nowMoney = nowMoney;
         this.fundingImageUrl = fundingImageUrl;
+        this.giftList = new ArrayList<>();
     }
 }
