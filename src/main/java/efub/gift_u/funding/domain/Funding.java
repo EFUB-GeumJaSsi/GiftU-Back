@@ -47,7 +47,7 @@ public class Funding extends BaseTimeEntity {
     private String deliveryAddress;
 
     @Column(nullable = false)
-    private Long visibility;
+    private Boolean visibility;
 
     @Column
     private Long password;
@@ -68,7 +68,7 @@ public class Funding extends BaseTimeEntity {
     List<Gift> giftList = new ArrayList<>();
 
     @Builder
-    public Funding(User user, String fundingTitle, String fundingContent, Date fundingStartDate, Date fundingEndDate, String status, String deliveryAddress, Long visibility, Long password, Long nowMoney, String fundingImageUrl) {
+    public Funding(User user, String fundingTitle, String fundingContent, Date fundingStartDate, Date fundingEndDate, String status, String deliveryAddress, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
         this.user = user;
         this.fundingTitle = fundingTitle;
         this.fundingContent = fundingContent;

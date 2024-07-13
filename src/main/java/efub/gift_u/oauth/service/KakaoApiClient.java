@@ -76,4 +76,24 @@ public class KakaoApiClient {
         return restTemplate.postForObject(url, request, KakaoInfoResponseDto.class);
     }
 
+    // 카카오 회원 탈퇴 메서드 //
+    public String UnlinkUser(String accessToken) {
+        String unlinkUrl = apiUri +"/v1/user/unlink";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.set("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> request = new HttpEntity<>("", httpHeaders);
+
+        // POST 요청 보내기
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                unlinkUrl,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+        return responseEntity.getBody();
+    }
+
 }
