@@ -11,8 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,13 +35,14 @@ public class Funding extends BaseTimeEntity {
     private String fundingContent;
 
     @Column(nullable = false)
-    private Date fundingStartDate;
+    private LocalDate fundingStartDate;
 
     @Column(nullable = false)
-    private Date fundingEndDate;
+    private LocalDate fundingEndDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private FundingStatus status;
 
     @Column(nullable = false)
     private String deliveryAddress;
@@ -50,7 +51,7 @@ public class Funding extends BaseTimeEntity {
     private Boolean visibility;
 
     @Column
-    private Long password;
+    private Long password; //비밀번호는 숫자 4자리
 
     @Column
     private Long nowMoney;
