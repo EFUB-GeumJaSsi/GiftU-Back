@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
-    Optional<Friend> findByUserAndFriend(User user, User friend);
-    List<Friend> findAllByUserAndStatus(User user, FriendStatus status);
-    void deleteByUserAndFriend(User user, User friend);
+    Optional<Friend> findByFirstUserAndSecondUser(User firstUser, User secondUser);
+    List<Friend> findAllByFirstUserAndStatus(User firstUser, FriendStatus status);
+    List<Friend> findAllBySecondUserAndStatus(User secondUser, FriendStatus status);
 }

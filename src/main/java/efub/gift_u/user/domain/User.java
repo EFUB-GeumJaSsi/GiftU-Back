@@ -36,8 +36,11 @@ public class User {
     @Column
     private String userImageUrl;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Friend> friendList = new ArrayList<>();
+    @OneToMany(mappedBy = "firstUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friend> friendsAsFirstUser = new ArrayList<>();
+
+    @OneToMany(mappedBy = "secondUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friend> friendsAsSecondUser = new ArrayList<>();
 
     @OneToMany(mappedBy = "noticeId", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Notice> noticeList = new ArrayList<>();

@@ -1,6 +1,5 @@
 package efub.gift_u.friend.dto;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class FriendListResponseDto {
     private List<FriendResponseDto> friends;
     private int friendCount;
@@ -19,4 +18,6 @@ public class FriendListResponseDto {
         this.friendCount = friendCount;
     }
 }
+
+
 

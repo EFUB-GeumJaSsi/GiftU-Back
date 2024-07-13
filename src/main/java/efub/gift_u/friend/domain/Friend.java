@@ -17,21 +17,22 @@ public class Friend {
     private Long friendTableId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", updatable = false, nullable = false)
-    private User user;
+    @JoinColumn(name = "firstUserId", updatable = false, nullable = false)
+    private User firstUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friendId", updatable = false, nullable = false)
-    private User friend;
+    @JoinColumn(name = "secondUserId", updatable = false, nullable = false)
+    private User secondUser;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FriendStatus status;
 
     @Builder
-    public Friend(User user, User friend, FriendStatus status) {
-        this.user = user;
-        this.friend = friend;
+    public Friend(User firstUser, User secondUser, FriendStatus status) {
+        this.firstUser = firstUser;
+        this.secondUser = secondUser;
+        this.status = status;
     }
 
     public void accept() {
