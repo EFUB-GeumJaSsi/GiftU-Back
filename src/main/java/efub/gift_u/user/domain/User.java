@@ -24,7 +24,7 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(nullable = false, unique = true, length = 16)
+    @Column(length = 50)
     private String nickname;
 
     @Column(updatable = false)
@@ -36,11 +36,11 @@ public class User {
     @Column
     private String userImageUrl;
 
-    @OneToMany(mappedBy = "firstUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Friend> friendsAsFirstUser = new ArrayList<>();
+    @Column
+    private String kakaoAccessToken;
 
-    @OneToMany(mappedBy = "secondUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Friend> friendsAsSecondUser = new ArrayList<>();
+    @OneToMany(mappedBy = "friendTableId", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Friend> friendList = new ArrayList<>();
 
     @OneToMany(mappedBy = "noticeId", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Notice> noticeList = new ArrayList<>();
@@ -52,10 +52,25 @@ public class User {
     List<Funding> fundingList = new ArrayList<>();
 
     @Builder
-    public User(String nickname, String email, Date birthday, String userImageUrl) {
+    public User(String nickname, String email, Date birthday, String userImageUrl, String kakaoAccessToken) {
         this.nickname = nickname;
         this.email = email;
         this.birthday = birthday;
         this.userImageUrl = userImageUrl;
+        this.kakaoAccessToken = kakaoAccessToken;
     }
+
+    // 액세스 토큰 업데이트
+    public void updateKakaoAccessToken(String kakaoAccessToken) {
+        this.kakaoAccessToken = kakaoAccessToken;
+        System.out.println(" 카카오 액세스 토큰" + kakaoAccessToken);
+    }
+
+    // 회원 정보 수정
+    public void updateUser(String nickname, Date birthday, String userImageUrl){
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.userImageUrl = userImageUrl;
+    }
+
 }
