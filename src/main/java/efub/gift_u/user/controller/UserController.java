@@ -1,6 +1,7 @@
 package efub.gift_u.user.controller;
 
 import efub.gift_u.oauth.customAnnotation.AuthUser;
+import efub.gift_u.oauth.service.KakaoApiClient;
 import efub.gift_u.user.domain.User;
 import efub.gift_u.user.dto.UserResponseDto;
 import efub.gift_u.user.dto.UserUpdateRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final KakaoApiClient kakaoApiClient;
 
     /* 회원 정보 조회 */
     @GetMapping
@@ -33,12 +35,13 @@ public class UserController {
     }
 
 
-    /* 회원 정보 삭제 */
+    /* 회원 탈퇴 */
     @DeleteMapping
     @ResponseStatus(value = HttpStatus.OK)
     public String deleteUser(@AuthUser User user) {
         userService.deleteUser(user);
-        return "성공적으로 탈퇴되었습니다.(서비스 DB에서 정보 삭제)";
+        String response = kakaoApiClient.UnlinkUser(user.getKakaoAccessToken());
+        return "성공적으로 탈퇴되었습니다. 카카오계정ID : " + response;
     }
 
 }

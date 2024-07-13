@@ -54,5 +54,4 @@ public class OAuthLoginService {
         userRepository.save(user);
     }
 
-    //
 }
