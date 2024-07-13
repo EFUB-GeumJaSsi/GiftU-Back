@@ -58,13 +58,13 @@ public class Funding extends BaseTimeEntity {
     @Column(nullable = false)
     private String fundingImageUrl;
 
-    @OneToMany(mappedBy = "reviewId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviewList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "participationId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Participation> participationList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "giftId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Gift> giftList = new ArrayList<>();
 
     @Builder
