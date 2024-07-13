@@ -3,6 +3,7 @@ package efub.gift_u.friend.service;
 import com.sun.jdi.request.DuplicateRequestException;
 import efub.gift_u.friend.domain.Friend;
 import efub.gift_u.friend.domain.FriendStatus;
+import efub.gift_u.friend.dto.FriendDetailDto;
 import efub.gift_u.friend.dto.FriendListResponseDto;
 import efub.gift_u.friend.dto.FriendRequestDto;
 import efub.gift_u.friend.dto.FriendResponseDto;
@@ -38,7 +39,7 @@ public class FriendService {
         FriendStatus status = (firstUser.equals(currentUser)) ? FriendStatus.PENDING_FIRST_SECOND : FriendStatus.PENDING_SECOND_FIRST;
 
         if (friendRepository.findByFirstUserAndSecondUser(firstUser, secondUser).isPresent()) {
-            throw new DuplicateRequestException("이미 친구 요청을 보냈습니다.");
+            throw new DuplicateRequestException("친구 요청이 이미 존재하여 친구 요청을 보낼 수 없습니다.");
         }
 
         Friend friendRequest = Friend.builder()
@@ -104,20 +105,17 @@ public class FriendService {
         List<Friend> friendsAsFirstUser = friendRepository.findAllByFirstUserAndStatus(currentUser, FriendStatus.ACCEPTED);
         List<Friend> friendsAsSecondUser = friendRepository.findAllBySecondUserAndStatus(currentUser, FriendStatus.ACCEPTED);
 
-        List<FriendResponseDto> friendsDto = friendsAsFirstUser.stream()
-                .map(friend -> FriendResponseDto.from(friend, currentUser))
+        List<FriendDetailDto> friendsDto = friendsAsFirstUser.stream()
+                .map(friend -> FriendDetailDto.from(friend, currentUser))
                 .collect(Collectors.toList());
 
         friendsDto.addAll(friendsAsSecondUser.stream()
-                .map(friend -> FriendResponseDto.from(friend, currentUser))
+                .map(friend -> FriendDetailDto.from(friend, currentUser))
                 .toList());
 
         int friendCount = friendsDto.size();
 
-        return FriendListResponseDto.builder()
-                .friends(friendsDto)
-                .friendCount(friendCount)
-                .build();
+        return new FriendListResponseDto(friendsDto, friendCount);
     }
 
     public String deleteFriend(User currentUser, Long friendId) {
@@ -139,4 +137,3 @@ public class FriendService {
         return "친구가 삭제되었습니다.";
     }
 }
-

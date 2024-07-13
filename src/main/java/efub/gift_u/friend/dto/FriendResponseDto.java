@@ -3,12 +3,12 @@ package efub.gift_u.friend.dto;
 import efub.gift_u.friend.domain.Friend;
 import efub.gift_u.friend.domain.FriendStatus;
 import efub.gift_u.user.domain.User;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FriendResponseDto {
     private Long friendTableId;
     private Long firstUserId;
@@ -17,7 +17,6 @@ public class FriendResponseDto {
     private String friendEmail;
     private FriendStatus status;
 
-    @Builder
     public FriendResponseDto(Long friendTableId, Long firstUserId, Long secondUserId, String friendNickname, String friendEmail, FriendStatus status) {
         this.friendTableId = friendTableId;
         this.firstUserId = firstUserId;
@@ -29,14 +28,14 @@ public class FriendResponseDto {
 
     public static FriendResponseDto from(Friend friend, User user) {
         User friendUser = friend.getFirstUser().equals(user) ? friend.getSecondUser() : friend.getFirstUser();
-        return FriendResponseDto.builder()
-                .friendTableId(friend.getFriendTableId())
-                .firstUserId(friend.getFirstUser().getUserId())
-                .secondUserId(friend.getSecondUser().getUserId())
-                .friendNickname(friendUser.getNickname())
-                .friendEmail(friendUser.getEmail())
-                .status(friend.getStatus())
-                .build();
+        return new FriendResponseDto(
+                friend.getFriendTableId(),
+                friend.getFirstUser().getUserId(),
+                friend.getSecondUser().getUserId(),
+                friendUser.getNickname(),
+                friendUser.getEmail(),
+                friend.getStatus()
+        );
     }
 }
 
