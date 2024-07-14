@@ -31,14 +31,13 @@ jobs:
 
       - name: make application.yml
         run: |
-          mkdir -p ./community/src/main/resources 
-          cd ./community/src/main/resources
+          mkdir -p ./src/main/resources 
+          cd ./src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
 
       - name: Build with Gradle
         run: |
-          cd GiftU-Back
           chmod +x ./gradlew
           ./gradlew build -x test
 
