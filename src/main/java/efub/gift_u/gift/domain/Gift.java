@@ -17,7 +17,7 @@ public class Gift {
     private Long giftId;
 
     @ManyToOne
-    @JoinColumn(name = "fundingId")
+    @JoinColumn(name = "fundingId", nullable = false)
     private Funding funding;
 
     @Column(nullable = false)
