@@ -31,9 +31,7 @@ public class ParticipationService {
             throw new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND , "해당 펀딩에는 참여자가 없습니다.");
         }
         Collections.sort(participationList, Comparator.comparing(Participation::getContributionAmount).reversed());
-         return ParticipationResponseDto.from(participationList);
+        return ParticipationResponseDto.from(participationList);
     }
-
-
 
 }
