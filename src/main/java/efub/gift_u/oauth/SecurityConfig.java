@@ -23,7 +23,8 @@ public class SecurityConfig {
 
     // 인증이 필요없는 URL 패턴 목록을 정의
     private static final String[] AUTH_WHITELIST = {
-            "/api/oauth/kakao"
+            "/api/oauth/kakao",
+            "/fundings/{fundingId}"
     };
 
     @Bean
