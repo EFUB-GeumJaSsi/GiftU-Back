@@ -7,8 +7,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: giftu-github-actions-s3-bucket
-  CODE_DEPLOY_APPLICATION_NAME: giftu-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: giftu-codedeploy-deployment-group
+  CODE_DEPLOY_APPLICATION_NAME: giftU-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: giftU-codedeploy-deployment-group
 
 permissions:
   contents: read
