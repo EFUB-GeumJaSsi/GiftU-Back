@@ -38,7 +38,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          cd community
+          cd GiftU-Back
           chmod +x ./gradlew
           ./gradlew build -x test
 
