@@ -11,8 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,22 +35,23 @@ public class Funding extends BaseTimeEntity {
     private String fundingContent;
 
     @Column(nullable = false)
-    private Date fundingStartDate;
+    private LocalDate fundingStartDate;
 
     @Column(nullable = false)
-    private Date fundingEndDate;
+    private LocalDate fundingEndDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private FundingStatus status;
 
     @Column(nullable = false)
     private String deliveryAddress;
 
     @Column(nullable = false)
-    private Long visibility;
+    private Boolean visibility;
 
     @Column
-    private Long password;
+    private Long password; //비밀번호는 숫자 4자리
 
     @Column
     private Long nowMoney;
@@ -58,17 +59,17 @@ public class Funding extends BaseTimeEntity {
     @Column(nullable = false)
     private String fundingImageUrl;
 
-    @OneToMany(mappedBy = "reviewId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviewList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "participationId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Participation> participationList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "giftId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Gift> giftList = new ArrayList<>();
 
     @Builder
-    public Funding(User user, String fundingTitle, String fundingContent, Date fundingStartDate, Date fundingEndDate, String status, String deliveryAddress, Long visibility, Long password, Long nowMoney, String fundingImageUrl) {
+    public Funding(User user, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, String deliveryAddress, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
         this.user = user;
         this.fundingTitle = fundingTitle;
         this.fundingContent = fundingContent;
@@ -80,5 +81,6 @@ public class Funding extends BaseTimeEntity {
         this.password = password;
         this.nowMoney = nowMoney;
         this.fundingImageUrl = fundingImageUrl;
+        this.giftList = new ArrayList<>();
     }
 }
