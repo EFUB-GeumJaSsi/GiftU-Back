@@ -8,6 +8,8 @@ import efub.gift_u.funding.dto.*;
 import efub.gift_u.funding.repository.FundingRepository;
 import efub.gift_u.gift.domain.Gift;
 import efub.gift_u.gift.repository.GiftRepository;
+import efub.gift_u.participation.domain.Participation;
+import efub.gift_u.participation.repository.ParticipationRepository;
 import efub.gift_u.participation.service.ParticipationService;
 import efub.gift_u.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class FundingService {
     private final FundingRepository fundingRepository;
     private final GiftRepository giftRepository;
     private final ParticipationService participationService;
+    private final ParticipationRepository participationRepository;
 
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto) {
         Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
@@ -82,7 +85,6 @@ public class FundingService {
         return new AllFundingResponseDto(dtoList);
     }
 
-
     /* 펀딩 리스트 조회 - 내가 개설한 - 상태 필터링 */
     public AllFundingResponseDto getAllFundingByUserAndStatus(Long userId, FundingStatus status) {
         List<Funding> fundings = fundingRepository.findAllByUserAndStatus(userId, status);
@@ -93,8 +95,23 @@ public class FundingService {
     }
 
 
+    /* 펀딩 리스트 조회 - 내가 참여한 - 전체 */
+    public AllFundingResponseDto getAllParticipatedFundingByUser(Long userId) {
+        List<Funding> fundings = participationRepository.findAllFundingByUserId(userId);
+        List<IndividualFundingResponseDto> dtoList = fundings.stream()
+                .map(IndividualFundingResponseDto::from)
+                .collect(Collectors.toList());
+        return new AllFundingResponseDto(dtoList);
+    }
 
-
+    /* 펀딩 리스트 조회 - 내가 참여한 - 상태 필터링 */
+    public AllFundingResponseDto getAllParticipatedFundingByUserAndStatus(Long userId, FundingStatus status) {
+        List<Funding> fundings = participationRepository.findAllFundingByUserIdAndStatus(userId, status);
+        List<IndividualFundingResponseDto> dtoList = fundings.stream()
+                .map(IndividualFundingResponseDto::from)
+                .collect(Collectors.toList());
+        return new AllFundingResponseDto(dtoList);
+    }
 }
 
 

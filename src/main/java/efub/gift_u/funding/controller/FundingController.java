@@ -34,11 +34,23 @@ public class FundingController {
         return fundingService.getAllFundingByUser(user.getUserId());
     }
 
-
     /* 펀딩 리스트 조회 - 내가 개설한 - 상태 필터링 */
-    @GetMapping("list/{status}")
+    @GetMapping("/list/{status}")
     public AllFundingResponseDto getFundingByUserAndStatus(@AuthUser User user, @PathVariable("status") FundingStatus status){
         return fundingService.getAllFundingByUserAndStatus(user.getUserId(), status);
+    }
+
+
+    /* 펀딩 리스트 조회 - 내가 참여한 - 전체 */
+    @GetMapping("/participation")
+    public AllFundingResponseDto getParticipatedFundingByUser(@AuthUser User user) {
+        return fundingService.getAllParticipatedFundingByUser(user.getUserId());
+    }
+
+    /* 펀딩 리스트 조회 - 내가 참여한 - 상태 필터링 */
+    @GetMapping("/participation/{status}")
+    public AllFundingResponseDto getParticipatedFundingByUserAndStatus(@AuthUser User user, @PathVariable("status") FundingStatus status){
+        return fundingService.getAllParticipatedFundingByUserAndStatus(user.getUserId(), status);
     }
 
 
