@@ -4,9 +4,7 @@ import efub.gift_u.exception.CustomException;
 import efub.gift_u.exception.ErrorCode;
 import efub.gift_u.funding.domain.Funding;
 import efub.gift_u.funding.domain.FundingStatus;
-import efub.gift_u.funding.dto.FundingRequestDto;
-import efub.gift_u.funding.dto.FundingResponseDetailDto;
-import efub.gift_u.funding.dto.FundingResponseDto;
+import efub.gift_u.funding.dto.*;
 import efub.gift_u.funding.repository.FundingRepository;
 import efub.gift_u.gift.domain.Gift;
 import efub.gift_u.gift.repository.GiftRepository;
@@ -73,6 +71,27 @@ public class FundingService {
         return  ResponseEntity.status(HttpStatus.OK)
                 .body(FundingResponseDetailDto.from(funding ,  participationService.getParticipationDetail(funding)));
     }
+
+
+    /* 펀딩 리스트 조회 - 내가 개설한 - 전체 */
+    public AllFundingResponseDto getAllFundingByUser(Long userId) {
+        List<Funding> fundings = fundingRepository.findAllByUserId(userId);
+        List<IndividualFundingResponseDto> dtoList = fundings.stream()
+            .map(IndividualFundingResponseDto::from)
+            .collect(Collectors.toList());
+        return new AllFundingResponseDto(dtoList);
+    }
+
+
+    /* 펀딩 리스트 조회 - 내가 개설한 - 상태 필터링 */
+    public AllFundingResponseDto getAllFundingByUserAndStatus(Long userId, FundingStatus status) {
+        List<Funding> fundings = fundingRepository.findAllByUserAndStatus(userId, status);
+        List<IndividualFundingResponseDto> dtoList = fundings.stream()
+            .map(IndividualFundingResponseDto::from)
+            .collect(Collectors.toList());
+        return new AllFundingResponseDto(dtoList);
+    }
+
 
 
 

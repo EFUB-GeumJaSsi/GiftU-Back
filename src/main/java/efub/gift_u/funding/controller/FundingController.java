@@ -1,8 +1,7 @@
 package efub.gift_u.funding.controller;
 
-import efub.gift_u.funding.dto.FundingRequestDto;
-import efub.gift_u.funding.dto.FundingResponseDetailDto;
-import efub.gift_u.funding.dto.FundingResponseDto;
+import efub.gift_u.funding.domain.FundingStatus;
+import efub.gift_u.funding.dto.*;
 import efub.gift_u.funding.service.FundingService;
 import efub.gift_u.oauth.customAnnotation.AuthUser;
 import efub.gift_u.user.domain.User;
@@ -27,5 +26,21 @@ public class FundingController {
     public ResponseEntity<FundingResponseDetailDto> getFundingDetail(@PathVariable("fundingId") Long fundingId){
         return fundingService.getFundingDetail(fundingId);
     }
+
+
+    /* 펀딩 리스트 조회 - 내가 개설한 - 전체 */
+    @GetMapping("/list")
+    public AllFundingResponseDto getFundingByUser(@AuthUser User user) {
+        return fundingService.getAllFundingByUser(user.getUserId());
+    }
+
+
+    /* 펀딩 리스트 조회 - 내가 개설한 - 상태 필터링 */
+    @GetMapping("list/{status}")
+    public AllFundingResponseDto getFundingByUserAndStatus(@AuthUser User user, @PathVariable("status") FundingStatus status){
+        return fundingService.getAllFundingByUserAndStatus(user.getUserId(), status);
+    }
+
+
 }
 
