@@ -2,14 +2,16 @@ package efub.gift_u.funding.service;
 
 import efub.gift_u.exception.CustomException;
 import efub.gift_u.exception.ErrorCode;
+import efub.gift_u.friend.dto.FriendDetailDto;
+import efub.gift_u.friend.dto.FriendListResponseDto;
+import efub.gift_u.friend.service.FriendService;
 import efub.gift_u.funding.domain.Funding;
 import efub.gift_u.funding.domain.FundingStatus;
-import efub.gift_u.funding.dto.FundingRequestDto;
-import efub.gift_u.funding.dto.FundingResponseDetailDto;
-import efub.gift_u.funding.dto.FundingResponseDto;
+import efub.gift_u.funding.dto.*;
 import efub.gift_u.funding.repository.FundingRepository;
 import efub.gift_u.gift.domain.Gift;
 import efub.gift_u.gift.repository.GiftRepository;
+import efub.gift_u.participation.repository.ParticipationRepository;
 import efub.gift_u.participation.service.ParticipationService;
 import efub.gift_u.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static efub.gift_u.funding.domain.FundingStatus.IN_PROGRESS;
 
 @Service
 @Transactional
@@ -29,6 +34,8 @@ public class FundingService {
     private final FundingRepository fundingRepository;
     private final GiftRepository giftRepository;
     private final ParticipationService participationService;
+    private final ParticipationRepository participationRepository;
+    private final FriendService friendService;
 
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto) {
         Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
@@ -38,7 +45,7 @@ public class FundingService {
                 .fundingContent(requestDto.getFundingContent())
                 .fundingStartDate(LocalDate.now())
                 .fundingEndDate(requestDto.getFundingEndDate())
-                .status(FundingStatus.IN_PROGRESS)
+                .status(IN_PROGRESS)
                 .deliveryAddress(requestDto.getDeliveryAddress())
                 .visibility(requestDto.getVisibility())
                 .password(password)
@@ -75,7 +82,53 @@ public class FundingService {
     }
 
 
+    /* 펀딩 리스트 조회 - 내가 개설한 - 전체 */
+    public AllFundingResponseDto getAllFundingByUser(Long userId) {
+        List<Funding> fundings = fundingRepository.findAllByUserId(userId);
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
 
+    /* 펀딩 리스트 조회 - 내가 개설한 - 상태 필터링 */
+    public AllFundingResponseDto getAllFundingByUserAndStatus(Long userId, FundingStatus status) {
+        List<Funding> fundings = fundingRepository.findAllByUserAndStatus(userId, status);
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+
+    /* 펀딩 리스트 조회 - 내가 참여한 - 전체 */
+    public AllFundingResponseDto getAllParticipatedFundingByUser(Long userId) {
+        List<Funding> fundings = participationRepository.findAllFundingByUserId(userId);
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+    /* 펀딩 리스트 조회 - 내가 참여한 - 상태 필터링 */
+    public AllFundingResponseDto getAllParticipatedFundingByUserAndStatus(Long userId, FundingStatus status) {
+        List<Funding> fundings = participationRepository.findAllFundingByUserIdAndStatus(userId, status);
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+
+    /* 펀딩 리스트 조회 - 친구가 개설한 펀딩 중 진행중인 펀딩 */
+    public AllFundingResponseDto getAllFriendsFundingByUser(User user) {
+        FriendListResponseDto friendList = friendService.getFriends(user);
+        List<FriendDetailDto> friends = friendList.getFriends();
+        List<Funding> fundings = new ArrayList<>();
+        for (FriendDetailDto friend : friends) {
+            fundings.addAll(fundingRepository.findAllByUserAndStatus(friend.getFriendId(), IN_PROGRESS));
+        }
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+    private List<IndividualFundingResponseDto> convertToDtoList(List<Funding> fundings){
+        return fundings.stream()
+                .map(IndividualFundingResponseDto::from)
+                .collect(Collectors.toList());
+    }
 }
 
 
