@@ -85,18 +85,14 @@ public class FundingService {
     /* 펀딩 리스트 조회 - 내가 개설한 - 전체 */
     public AllFundingResponseDto getAllFundingByUser(Long userId) {
         List<Funding> fundings = fundingRepository.findAllByUserId(userId);
-        List<IndividualFundingResponseDto> dtoList = fundings.stream()
-            .map(IndividualFundingResponseDto::from)
-            .collect(Collectors.toList());
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
 
     /* 펀딩 리스트 조회 - 내가 개설한 - 상태 필터링 */
     public AllFundingResponseDto getAllFundingByUserAndStatus(Long userId, FundingStatus status) {
         List<Funding> fundings = fundingRepository.findAllByUserAndStatus(userId, status);
-        List<IndividualFundingResponseDto> dtoList = fundings.stream()
-            .map(IndividualFundingResponseDto::from)
-            .collect(Collectors.toList());
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
 
@@ -104,18 +100,14 @@ public class FundingService {
     /* 펀딩 리스트 조회 - 내가 참여한 - 전체 */
     public AllFundingResponseDto getAllParticipatedFundingByUser(Long userId) {
         List<Funding> fundings = participationRepository.findAllFundingByUserId(userId);
-        List<IndividualFundingResponseDto> dtoList = fundings.stream()
-                .map(IndividualFundingResponseDto::from)
-                .collect(Collectors.toList());
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
 
     /* 펀딩 리스트 조회 - 내가 참여한 - 상태 필터링 */
     public AllFundingResponseDto getAllParticipatedFundingByUserAndStatus(Long userId, FundingStatus status) {
         List<Funding> fundings = participationRepository.findAllFundingByUserIdAndStatus(userId, status);
-        List<IndividualFundingResponseDto> dtoList = fundings.stream()
-                .map(IndividualFundingResponseDto::from)
-                .collect(Collectors.toList());
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
 
@@ -128,10 +120,14 @@ public class FundingService {
         for (FriendDetailDto friend : friends) {
             fundings.addAll(fundingRepository.findAllByUserAndStatus(friend.getFriendId(), IN_PROGRESS));
         }
-        List<IndividualFundingResponseDto> dtoList = fundings.stream()
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+    private List<IndividualFundingResponseDto> convertToDtoList(List<Funding> fundings){
+        return fundings.stream()
                 .map(IndividualFundingResponseDto::from)
                 .collect(Collectors.toList());
-        return new AllFundingResponseDto(dtoList);
     }
 }
 
