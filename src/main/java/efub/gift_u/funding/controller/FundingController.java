@@ -54,5 +54,12 @@ public class FundingController {
     }
 
 
+    /* 펀딩 리스트 조회 - 친구가 개설한 펀딩 중 진행 중인 */
+    @GetMapping("/friends")
+    public AllFundingResponseDto getFriendsFundingByUser(@AuthUser User user) {
+        return fundingService.getAllFriendsFundingByUser(user);
+    }
+
+
 }
 
