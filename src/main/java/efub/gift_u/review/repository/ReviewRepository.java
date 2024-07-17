@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Review  findByFunding(Funding funding);
+
+    Boolean existsReviewByFunding(Funding funding);
 }

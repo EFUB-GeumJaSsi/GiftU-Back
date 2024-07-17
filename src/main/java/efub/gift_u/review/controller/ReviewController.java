@@ -18,10 +18,8 @@ public class ReviewController {
 
     /* 리뷰 생성 */
     @PostMapping("/fundings/{fundingId}/review")
-    public ResponseEntity<ReviewResponseDto> createReview(@AuthUser User user ,@PathVariable("fundingId") Long fundingId , @RequestBody ReviewRequestDto requestDto){
-       ReviewResponseDto dto = reviewService.createReview(user ,fundingId , requestDto);
-       return ResponseEntity.status(HttpStatus.CREATED)
-               .body(dto);
+    public ResponseEntity<?> createReview(@AuthUser User user ,@PathVariable("fundingId") Long fundingId , @RequestBody ReviewRequestDto requestDto){
+        return reviewService.createReview(user ,fundingId , requestDto);
     }
 
     /* 리뷰 조회 */
@@ -34,18 +32,15 @@ public class ReviewController {
 
     /* 리뷰 수정 */
     @PatchMapping("/fundings/{fundingId}/review")
-    public ResponseEntity<ReviewResponseDto> patchReview(@AuthUser User user ,@PathVariable("fundingId") Long fundingId , @RequestBody ReviewRequestDto requestDto){
-        ReviewResponseDto dto = reviewService.updateReview(user ,fundingId , requestDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(dto);
+    public ResponseEntity<?>  patchReview(@AuthUser User user ,@PathVariable("fundingId") Long fundingId , @RequestBody ReviewRequestDto requestDto){
+        return reviewService.updateReview(user ,fundingId , requestDto);
     }
 
     /* 리뷰 삭제 */
     @DeleteMapping("/fundings/{fundingId}/review")
-    public  ResponseEntity<String> deleteReview(@AuthUser User user, @PathVariable("fundingId") Long fundingId){
-        String deleteMessage = reviewService.deleteReview(user ,fundingId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(deleteMessage);
+    public  ResponseEntity<?> deleteReview(@AuthUser User user, @PathVariable("fundingId") Long fundingId){
+        return reviewService.deleteReview(user ,fundingId);
+
     }
 
 }
