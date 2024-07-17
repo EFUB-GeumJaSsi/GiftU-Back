@@ -6,6 +6,7 @@ import efub.gift_u.funding.service.FundingService;
 import efub.gift_u.oauth.customAnnotation.AuthUser;
 import efub.gift_u.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +61,15 @@ public class FundingController {
         return fundingService.getAllFriendsFundingByUser(user);
     }
 
-
+    /* 펀딩 비밀번호 확인*/
+    @PostMapping("/{fundingId}/allow")
+    public ResponseEntity<Boolean> isAllowed( @PathVariable("fundingId") Long fundingId , @RequestBody FundingPasswordDto fundingPasswordDto){
+       if(fundingService.isAllowed(fundingId , fundingPasswordDto)){
+           return ResponseEntity.status(HttpStatus.OK)
+                   .body(true);
+       }
+       else  return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(false);
+    }
 }
 

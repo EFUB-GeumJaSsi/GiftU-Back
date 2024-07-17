@@ -129,6 +129,20 @@ public class FundingService {
                 .map(IndividualFundingResponseDto::from)
                 .collect(Collectors.toList());
     }
+
+    /* 펀딩 비밀번호 확인 */
+    public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        Long compPassword = fundingPasswordDto.getPassword();
+        if(compPassword.equals(funding.getPassword())){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }
 
 
