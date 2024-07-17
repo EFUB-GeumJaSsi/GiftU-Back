@@ -19,7 +19,10 @@ public enum ErrorCode {
     FUNDING_NOT_FOUND(HttpStatus.NOT_FOUND , "해당 펀딩을 찾을 수 없습니다."),
 
     // Participation
-    PARTICIPATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 펀딩에 참여자가 존재하지 않습니다.");
+    PARTICIPATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 펀딩에 참여자가 존재하지 않습니다."),
+
+    // Review
+    INVALID_USER(HttpStatus.FORBIDDEN , "펀딩의 소유자와 일치하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;

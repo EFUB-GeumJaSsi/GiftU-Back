@@ -1,11 +1,10 @@
 package efub.gift_u.participation.dto;
 
-import efub.gift_u.funding.domain.Funding;
+
 import efub.gift_u.participation.domain.Participation;
-import efub.gift_u.user.domain.User;
 import lombok.*;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
 @Getter
