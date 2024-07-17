@@ -1,5 +1,6 @@
 package efub.gift_u.funding.service;
 
+import efub.gift_u.S3Image.service.S3ImageService;
 import efub.gift_u.exception.CustomException;
 import efub.gift_u.exception.ErrorCode;
 import efub.gift_u.friend.dto.FriendDetailDto;
@@ -19,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +39,17 @@ public class FundingService {
     private final ParticipationService participationService;
     private final ParticipationRepository participationRepository;
     private final FriendService friendService;
+    private final S3ImageService s3ImageService;
 
-    public FundingResponseDto createFunding(User user, FundingRequestDto requestDto) {
+    public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, MultipartFile multipartFile, List<MultipartFile> giftImages) throws IOException {
+
+        String fundingImageUrl = null;
+
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            String fileName = s3ImageService.upload(multipartFile, "images/fundingImages"); // S3에 이미지 업로드
+            fundingImageUrl = s3ImageService.getFileUrl(fileName); // 업로드된 파일의 URL 가져오기
+        }
+
         Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
         Funding funding = Funding.builder()
                 .user(user)
@@ -45,24 +57,40 @@ public class FundingService {
                 .fundingContent(requestDto.getFundingContent())
                 .fundingStartDate(LocalDate.now())
                 .fundingEndDate(requestDto.getFundingEndDate())
-                .status(IN_PROGRESS)
+                .status(FundingStatus.IN_PROGRESS)
                 .deliveryAddress(requestDto.getDeliveryAddress())
                 .visibility(requestDto.getVisibility())
                 .password(password)
                 .nowMoney(0L)
-                .fundingImageUrl(requestDto.getFundingImageUrl())
+                .fundingImageUrl(fundingImageUrl)
                 .build();
 
         Funding savedFunding = fundingRepository.save(funding);
 
         List<Gift> gifts = requestDto.getGifts().stream()
-                .map(giftDto -> Gift.builder()
-                        .funding(savedFunding)
-                        .giftName(giftDto.getGiftName())
-                        .price(Long.valueOf(giftDto.getPrice()))
-                        .giftUrl(giftDto.getGiftUrl())
-                        .giftImageUrl(giftDto.getGiftImageUrl())
-                        .build())
+                .map(giftDto -> {
+                    String giftImageUrl = null;
+                    int index = requestDto.getGifts().indexOf(giftDto);
+                    if (giftImages != null && !giftImages.isEmpty() && giftImages.size() > index) {
+                        MultipartFile giftImage = giftImages.get(index);
+                        if (giftImage != null && !giftImage.isEmpty()) {
+                            try {
+                                String giftFileName = s3ImageService.upload(giftImage, "images/giftImages"); // S3에 이미지 업로드
+                                giftImageUrl = s3ImageService.getFileUrl(giftFileName); // 업로드된 파일의 URL 가져오기
+                            } catch (IOException e) {
+                                throw new RuntimeException("Gift image upload failed", e);
+                            }
+                        }
+                    }
+
+                    return Gift.builder()
+                            .funding(savedFunding)
+                            .giftName(giftDto.getGiftName())
+                            .price(Long.valueOf(giftDto.getPrice()))
+                            .giftUrl(giftDto.getGiftUrl())
+                            .giftImageUrl(giftImageUrl)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         savedFunding.getGiftList().addAll(gifts);

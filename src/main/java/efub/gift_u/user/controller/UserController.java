@@ -10,6 +10,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/users")
@@ -29,11 +32,12 @@ public class UserController {
     /* 회원 정보 수정 */
     @PatchMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public UserResponseDto updateUser(@AuthUser User user, @RequestBody @Valid final UserUpdateRequestDto requestDto) {
-        User findedUser = userService.updateUser(user, requestDto);
-        return UserResponseDto.from(findedUser);
+    public UserResponseDto updateUser(@AuthUser User user,
+                                      @RequestPart(value = "userUpdateRequestDto") @Valid final UserUpdateRequestDto requestDto,
+                                      @RequestPart(value = "userImage", required = false) MultipartFile multipartFile) throws IOException{
+        User updatedUser = userService.updateUser(user, requestDto, multipartFile);
+        return UserResponseDto.from(updatedUser);
     }
-
 
     /* 회원 탈퇴 */
     @DeleteMapping
