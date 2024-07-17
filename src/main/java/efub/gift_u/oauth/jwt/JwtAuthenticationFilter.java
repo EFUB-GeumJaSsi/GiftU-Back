@@ -2,7 +2,6 @@ package efub.gift_u.oauth.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -31,9 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 JWT 받아옴
         String accessToken = jwtService.getTokenFromRequest(request);
-
-        System.out.println("JwtAuthenticationFilter 작동됨 \n 액세스 토큰 : " + accessToken); // 확인 출력문
-        System.out.println();
 
         // 유효성 검사 (유효한 토큰인지 확인)
         if (accessToken != null && jwtService.validateToken(accessToken)) {
