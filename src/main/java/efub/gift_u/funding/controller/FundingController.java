@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/fundings")
 @RequiredArgsConstructor
@@ -60,6 +62,11 @@ public class FundingController {
         return fundingService.getAllFriendsFundingByUser(user);
     }
 
+    /* 마감일 펀딩 목록 조회 - 캘린더 */
+    @GetMapping("/calendar/{fundingEndDate}")
+    public AllFundingResponseDto getFriendsFundingByUser(@AuthUser User user, @PathVariable("fundingEndDate")LocalDate fundingEndDate) {
+        return fundingService.getAllFriendsFundingByUserAndDate(user, fundingEndDate);
+    }
 
 }
 
