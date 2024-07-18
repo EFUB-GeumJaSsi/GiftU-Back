@@ -33,16 +33,28 @@ public class ReviewService {
         return targetFunding;
     }
 
+    /* 리뷰가 이미 존재하는지 확인 */
+    private void checkReviewExistence(Funding funding) {
+        if (isAlreadyExisted(funding)) {
+            throw new CustomException(ErrorCode.ALREADY_EXIST);
+        }
+    }
+
+    /* 펀딩 소유자와 리뷰 작성자 일치 여부 확인 */
+    private void checkUserValidity(User user, Funding funding) {
+        System.out.println(user.getUserId());
+        System.out.println(funding.getUser().getUserId());
+        System.out.println(Objects.equals(user.getUserId(), funding.getUser().getUserId()));
+        if (!Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
+            throw new CustomException(ErrorCode.INVALID_USER);
+        }
+    }
+
     /* 리뷰 생성 */
     public ResponseEntity<?> createReview(User user , Long fundingId, ReviewRequestDto requestDto) {
         Funding funding = findFunding(fundingId);
-        if(isAlreadyExisted(funding)){
-            throw  new CustomException(ErrorCode.ALREADY_EXIST);
-        }
-        //펀딩 소유자와 리뷰 작성자가 동일 id인지 확인
-        if(!Objects.equals(user.getUserId(), funding.getUser().getUserId())){
-            throw new CustomException(ErrorCode.INVALID_USER);
-        }
+        checkReviewExistence(funding);
+        checkUserValidity(user , funding);
         Review Review = ReviewRequestDto.toEntity(funding , requestDto);
         Review savedReview = reviewRepository.save(Review);
         ReviewResponseDto dto = ReviewResponseDto.from(savedReview);
@@ -52,12 +64,7 @@ public class ReviewService {
 
     /* 해당 펀딩에 대한 리뷰가 이미 존재하는지 확인 */
     public Boolean isAlreadyExisted(Funding funding){
-        if(reviewRepository.existsReviewByFunding(funding)){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return reviewRepository.existsReviewByFunding(funding);
     }
 
     /*리뷰 조회*/
@@ -71,10 +78,7 @@ public class ReviewService {
     /* 리뷰 수정 */
     public ResponseEntity<?> updateReview(User user, Long fundingId, ReviewRequestDto requestDto) {
         Funding funding = findFunding(fundingId);
-        //펀딩 소유자와 리뷰 작성자가 동일 id인지 확인
-        if(!Objects.equals(user.getUserId(), funding.getUser().getUserId())){
-            throw new CustomException(ErrorCode.INVALID_USER);
-        }
+        checkUserValidity(user , funding);
         Review review = reviewRepository.findByFunding(funding);
         Review updateReview = review.update(review , requestDto);
         ReviewResponseDto dto = ReviewResponseDto.from(updateReview);
@@ -85,10 +89,7 @@ public class ReviewService {
     /*리뷰 삭제*/
     public ResponseEntity<?> deleteReview(User user  , Long fundingId){
         Funding funding = findFunding(fundingId);
-        //펀딩 소유자와 리뷰 작성자가 동일 id인지 확인
-        if(!Objects.equals(user.getUserId(), funding.getUser().getUserId())){
-            throw new CustomException(ErrorCode.INVALID_USER);
-        }
+        checkUserValidity(user , funding);
         Review review = reviewRepository.findByFunding(funding);
         reviewRepository.delete(review);
         return ResponseEntity.status(HttpStatus.OK)
