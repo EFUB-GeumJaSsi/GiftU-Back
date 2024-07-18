@@ -6,8 +6,12 @@ import efub.gift_u.funding.service.FundingService;
 import efub.gift_u.oauth.customAnnotation.AuthUser;
 import efub.gift_u.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import java.time.LocalDate;
 
@@ -17,9 +21,12 @@ import java.time.LocalDate;
 public class FundingController {
     private final FundingService fundingService;
 
+    //펀딩 생성
     @PostMapping
-    public ResponseEntity<FundingResponseDto> createFunding(@AuthUser User user, @RequestBody FundingRequestDto requestDto) {
-        FundingResponseDto createdFunding = fundingService.createFunding(user, requestDto);
+    public ResponseEntity<FundingResponseDto> createFunding(@AuthUser User user,
+                                                            @RequestPart("fundingRequestDto") FundingRequestDto requestDto,
+                                                            @RequestPart(value = "giftImages", required = false) List<MultipartFile> giftImages) {
+        FundingResponseDto createdFunding = fundingService.createFunding(user, requestDto, giftImages);
         return ResponseEntity.ok(createdFunding);
     }
 
@@ -62,10 +69,23 @@ public class FundingController {
         return fundingService.getAllFriendsFundingByUser(user);
     }
 
+
     /* 마감일 펀딩 목록 조회 - 캘린더 */
     @GetMapping("/calendar/{fundingEndDate}")
     public AllFundingResponseDto getFriendsFundingByUser(@AuthUser User user, @PathVariable("fundingEndDate")LocalDate fundingEndDate) {
         return fundingService.getAllFriendsFundingByUserAndDate(user, fundingEndDate);
+    }
+
+
+    /* 펀딩 비밀번호 확인*/
+    @PostMapping("/{fundingId}/allow")
+    public ResponseEntity<Boolean> isAllowed( @PathVariable("fundingId") Long fundingId , @RequestBody FundingPasswordDto fundingPasswordDto){
+       if(fundingService.isAllowed(fundingId , fundingPasswordDto)){
+           return ResponseEntity.status(HttpStatus.OK)
+                   .body(true);
+       }
+       else  return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(false);
     }
 
 }

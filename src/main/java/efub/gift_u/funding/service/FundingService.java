@@ -1,5 +1,6 @@
 package efub.gift_u.funding.service;
 
+import efub.gift_u.S3Image.service.S3ImageService;
 import efub.gift_u.exception.CustomException;
 import efub.gift_u.exception.ErrorCode;
 import efub.gift_u.friend.dto.FriendDetailDto;
@@ -19,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +39,10 @@ public class FundingService {
     private final ParticipationService participationService;
     private final ParticipationRepository participationRepository;
     private final FriendService friendService;
+    private final S3ImageService s3ImageService;
 
-    public FundingResponseDto createFunding(User user, FundingRequestDto requestDto) {
+    public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
+
         Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
         Funding funding = Funding.builder()
                 .user(user)
@@ -45,7 +50,7 @@ public class FundingService {
                 .fundingContent(requestDto.getFundingContent())
                 .fundingStartDate(LocalDate.now())
                 .fundingEndDate(requestDto.getFundingEndDate())
-                .status(IN_PROGRESS)
+                .status(FundingStatus.IN_PROGRESS)
                 .deliveryAddress(requestDto.getDeliveryAddress())
                 .visibility(requestDto.getVisibility())
                 .password(password)
@@ -56,13 +61,29 @@ public class FundingService {
         Funding savedFunding = fundingRepository.save(funding);
 
         List<Gift> gifts = requestDto.getGifts().stream()
-                .map(giftDto -> Gift.builder()
-                        .funding(savedFunding)
-                        .giftName(giftDto.getGiftName())
-                        .price(Long.valueOf(giftDto.getPrice()))
-                        .giftUrl(giftDto.getGiftUrl())
-                        .giftImageUrl(giftDto.getGiftImageUrl())
-                        .build())
+                .map(giftDto -> {
+                    String giftImageUrl = null;
+                    int index = requestDto.getGifts().indexOf(giftDto);
+                    if (giftImages != null && !giftImages.isEmpty() && giftImages.size() > index) {
+                        MultipartFile giftImage = giftImages.get(index);
+                        if (giftImage != null && !giftImage.isEmpty()) {
+                            try {
+                                String giftFileName = s3ImageService.upload(giftImage, "images/giftImages"); // S3에 이미지 업로드
+                                giftImageUrl = s3ImageService.getFileUrl(giftFileName); // 업로드된 파일의 URL 가져오기
+                            } catch (IOException e) {
+                                throw new RuntimeException("Gift image upload failed", e);
+                            }
+                        }
+                    }
+
+                    return Gift.builder()
+                            .funding(savedFunding)
+                            .giftName(giftDto.getGiftName())
+                            .price(Long.valueOf(giftDto.getPrice()))
+                            .giftUrl(giftDto.getGiftUrl())
+                            .giftImageUrl(giftImageUrl)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         savedFunding.getGiftList().addAll(gifts);
@@ -142,6 +163,20 @@ public class FundingService {
         return fundings.stream()
                 .map(IndividualFundingResponseDto::from)
                 .collect(Collectors.toList());
+    }
+
+
+    /* 펀딩 비밀번호 확인 */
+    public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        Long compPassword = fundingPasswordDto.getPassword();
+        if(compPassword.equals(funding.getPassword())){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }
