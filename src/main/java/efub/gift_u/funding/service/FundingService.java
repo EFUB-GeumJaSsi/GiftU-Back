@@ -41,14 +41,7 @@ public class FundingService {
     private final FriendService friendService;
     private final S3ImageService s3ImageService;
 
-    public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, MultipartFile multipartFile, List<MultipartFile> giftImages) throws IOException {
-
-        String fundingImageUrl = null;
-
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            String fileName = s3ImageService.upload(multipartFile, "images/fundingImages"); // S3에 이미지 업로드
-            fundingImageUrl = s3ImageService.getFileUrl(fileName); // 업로드된 파일의 URL 가져오기
-        }
+    public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
 
         Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
         Funding funding = Funding.builder()
@@ -62,7 +55,7 @@ public class FundingService {
                 .visibility(requestDto.getVisibility())
                 .password(password)
                 .nowMoney(0L)
-                .fundingImageUrl(fundingImageUrl)
+                .fundingImageUrl(requestDto.getFundingImageUrl())
                 .build();
 
         Funding savedFunding = fundingRepository.save(funding);

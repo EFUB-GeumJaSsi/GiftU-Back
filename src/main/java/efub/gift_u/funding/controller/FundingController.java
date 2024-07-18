@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,13 +20,11 @@ public class FundingController {
     private final FundingService fundingService;
 
     //펀딩 생성
-    //펀딩 생성
     @PostMapping
     public ResponseEntity<FundingResponseDto> createFunding(@AuthUser User user,
                                                             @RequestPart("fundingRequestDto") FundingRequestDto requestDto,
-                                                            @RequestPart(value = "fundingImage", required = false) MultipartFile multipartFile,
-                                                            @RequestPart(value = "giftImages", required = false) List<MultipartFile> giftImages) throws IOException {
-        FundingResponseDto createdFunding = fundingService.createFunding(user, requestDto, multipartFile, giftImages);
+                                                            @RequestPart(value = "giftImages", required = false) List<MultipartFile> giftImages) {
+        FundingResponseDto createdFunding = fundingService.createFunding(user, requestDto, giftImages);
         return ResponseEntity.ok(createdFunding);
     }
 
