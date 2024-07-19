@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/fundings")
 @RequiredArgsConstructor
@@ -67,6 +69,14 @@ public class FundingController {
         return fundingService.getAllFriendsFundingByUser(user);
     }
 
+
+    /* 마감일 펀딩 목록 조회 - 캘린더 */
+    @GetMapping("/calendar/{fundingEndDate}")
+    public AllFundingResponseDto getFriendsFundingByUser(@AuthUser User user, @PathVariable("fundingEndDate")LocalDate fundingEndDate) {
+        return fundingService.getAllFriendsFundingByUserAndDate(user, fundingEndDate);
+    }
+
+
     /* 펀딩 비밀번호 확인*/
     @PostMapping("/{fundingId}/allow")
     public ResponseEntity<Boolean> isAllowed( @PathVariable("fundingId") Long fundingId , @RequestBody FundingPasswordDto fundingPasswordDto){
@@ -77,5 +87,6 @@ public class FundingController {
        else  return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(false);
     }
+
 }
 

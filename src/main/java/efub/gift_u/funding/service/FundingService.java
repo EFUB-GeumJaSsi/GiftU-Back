@@ -145,11 +145,26 @@ public class FundingService {
         return new AllFundingResponseDto(dtoList);
     }
 
+
+    /* 해당 마감일 펀딩 목록 조회 - 캘린더 */
+    public AllFundingResponseDto getAllFriendsFundingByUserAndDate(User user, LocalDate fundingEndDate) {
+        FriendListResponseDto friendList = friendService.getFriends(user);
+        List<FriendDetailDto> friends = friendList.getFriends();
+        List<Funding> fundings = new ArrayList<>();
+        for (FriendDetailDto friend : friends) {
+            fundings.addAll(fundingRepository.findAllByUserAndFundingEndDate(friend.getFriendId(), fundingEndDate));
+        }
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+
     private List<IndividualFundingResponseDto> convertToDtoList(List<Funding> fundings){
         return fundings.stream()
                 .map(IndividualFundingResponseDto::from)
                 .collect(Collectors.toList());
     }
+
 
     /* 펀딩 비밀번호 확인 */
     public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
