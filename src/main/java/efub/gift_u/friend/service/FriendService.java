@@ -10,6 +10,7 @@ import efub.gift_u.friend.dto.FriendResponseDto;
 import efub.gift_u.friend.repository.FriendRepository;
 import efub.gift_u.user.domain.User;
 import efub.gift_u.user.repository.UserRepository;
+import efub.gift_u.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,10 @@ import java.util.stream.Collectors;
 public class FriendService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public FriendResponseDto requestFriend(User currentUser, FriendRequestDto requestDto) {
-        User friend = userRepository.findByEmailOrNickname(requestDto.getEmail(), requestDto.getNickname())
-                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+        User friend = userService.findUserByEmail(requestDto.getEmail());
 
         if (currentUser.getUserId().equals(friend.getUserId())) {
             throw new IllegalArgumentException("자기 자신에게 친구 요청을 보낼 수 없습니다.");
