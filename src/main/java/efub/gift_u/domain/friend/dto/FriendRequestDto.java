@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FriendRequestDto {
-    private String nickname;
     private String email;
 
     @Builder
-    public FriendRequestDto(String nickname, String email) {
-        this.nickname = nickname;
+    public FriendRequestDto(String email) {
         this.email = email;
     }
 }

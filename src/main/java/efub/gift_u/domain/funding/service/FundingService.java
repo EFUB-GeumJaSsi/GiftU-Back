@@ -12,6 +12,7 @@ import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.domain.FundingStatus;
 import efub.gift_u.domain.gift.domain.Gift;
 import efub.gift_u.domain.gift.repository.GiftRepository;
+import efub.gift_u.domain.gift.service.GiftService;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.participation.service.ParticipationService;
 import efub.gift_u.domain.user.domain.User;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,59 +35,27 @@ import static efub.gift_u.domain.funding.domain.FundingStatus.IN_PROGRESS;
 @RequiredArgsConstructor
 public class FundingService {
     private final FundingRepository fundingRepository;
-    private final GiftRepository giftRepository;
     private final ParticipationService participationService;
     private final ParticipationRepository participationRepository;
     private final FriendService friendService;
-    private final S3ImageService s3ImageService;
+    private final GiftService giftService;
 
+    //펀딩 개설
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
 
-        Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
-        Funding funding = Funding.builder()
-                .user(user)
-                .fundingTitle(requestDto.getFundingTitle())
-                .fundingContent(requestDto.getFundingContent())
-                .fundingStartDate(LocalDate.now())
-                .fundingEndDate(requestDto.getFundingEndDate())
-                .status(FundingStatus.IN_PROGRESS)
-                .deliveryAddress(requestDto.getDeliveryAddress())
-                .visibility(requestDto.getVisibility())
-                .password(password)
-                .nowMoney(0L)
-                .fundingImageUrl(requestDto.getFundingImageUrl())
-                .build();
+        if (requestDto.getFundingEndDate() == null || requestDto.getFundingEndDate().isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.FUNDING_END_DATE_BEFORE_START);
+        }
+        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || String.valueOf(requestDto.getPassword()).length() != 4)) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD_PATTERN);
+        }
 
+        Funding funding = requestDto.toEntity(user);
         Funding savedFunding = fundingRepository.save(funding);
 
-        List<Gift> gifts = requestDto.getGifts().stream()
-                .map(giftDto -> {
-                    String giftImageUrl = null;
-                    int index = requestDto.getGifts().indexOf(giftDto);
-                    if (giftImages != null && !giftImages.isEmpty() && giftImages.size() > index) {
-                        MultipartFile giftImage = giftImages.get(index);
-                        if (giftImage != null && !giftImage.isEmpty()) {
-                            try {
-                                String giftFileName = s3ImageService.upload(giftImage, "images/giftImages"); // S3에 이미지 업로드
-                                giftImageUrl = s3ImageService.getFileUrl(giftFileName); // 업로드된 파일의 URL 가져오기
-                            } catch (IOException e) {
-                                throw new RuntimeException("Gift image upload failed", e);
-                            }
-                        }
-                    }
-
-                    return Gift.builder()
-                            .funding(savedFunding)
-                            .giftName(giftDto.getGiftName())
-                            .price(Long.valueOf(giftDto.getPrice()))
-                            .giftUrl(giftDto.getGiftUrl())
-                            .giftImageUrl(giftImageUrl)
-                            .build();
-                })
-                .collect(Collectors.toList());
-
+        List<Gift> gifts = giftService.createGifts(savedFunding, requestDto.getGifts(), giftImages);
         savedFunding.getGiftList().addAll(gifts);
-        giftRepository.saveAll(gifts);
+        giftService.saveAll(gifts);
 
         return FundingResponseDto.fromEntity(savedFunding);
     }
@@ -95,8 +63,8 @@ public class FundingService {
 
     /* 펀딩 상세 조회 */
     public ResponseEntity<FundingResponseDetailDto> getFundingDetail(Long fundingId) {
-         Funding funding = fundingRepository.findById(fundingId)
-                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
 
         return  ResponseEntity.status(HttpStatus.OK)
                 .body(FundingResponseDetailDto.from(funding ,  participationService.getParticipationDetail(funding)));
@@ -145,11 +113,26 @@ public class FundingService {
         return new AllFundingResponseDto(dtoList);
     }
 
+
+    /* 해당 마감일 펀딩 목록 조회 - 캘린더 */
+    public AllFundingResponseDto getAllFriendsFundingByUserAndDate(User user, LocalDate fundingEndDate) {
+        FriendListResponseDto friendList = friendService.getFriends(user);
+        List<FriendDetailDto> friends = friendList.getFriends();
+        List<Funding> fundings = new ArrayList<>();
+        for (FriendDetailDto friend : friends) {
+            fundings.addAll(fundingRepository.findAllByUserAndFundingEndDate(friend.getFriendId(), fundingEndDate));
+        }
+        List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
+        return new AllFundingResponseDto(dtoList);
+    }
+
+
     private List<IndividualFundingResponseDto> convertToDtoList(List<Funding> fundings){
         return fundings.stream()
                 .map(IndividualFundingResponseDto::from)
                 .collect(Collectors.toList());
     }
+
 
     /* 펀딩 비밀번호 확인 */
     public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
@@ -158,7 +141,16 @@ public class FundingService {
         Long compPassword = fundingPasswordDto.getPassword();
         return compPassword.equals(funding.getPassword());
     }
+    // 펀딩 삭제
+    @Transactional
+    public void deleteFunding(Long fundingId, User user) {
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        if (!funding.getUser().getUserId().equals(user.getUserId())) {
+            throw new CustomException(ErrorCode.FUNDING_DELETE_ACCESS_DENIED);
+        }
+        giftService.deleteGifts(funding);
+        fundingRepository.delete(funding);
+    }
 
 }
-
-

@@ -1,6 +1,9 @@
 package efub.gift_u.domain.funding.dto;
 
 import efub.gift_u.domain.gift.dto.GiftRequestDto;
+import efub.gift_u.domain.funding.domain.Funding;
+import efub.gift_u.domain.user.domain.User;
+import efub.gift_u.domain.funding.domain.FundingStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +34,22 @@ public class FundingRequestDto {
         this.password = password;
         this.fundingImageUrl = fundingImageUrl;
         this.gifts = gifts;
+    }
+
+    public Funding toEntity(User user) {
+        return Funding.builder()
+                .user(user)
+                .fundingTitle(this.fundingTitle)
+                .fundingContent(this.fundingContent)
+                .fundingStartDate(LocalDate.now())
+                .fundingEndDate(this.fundingEndDate)
+                .status(FundingStatus.IN_PROGRESS)
+                .deliveryAddress(this.deliveryAddress)
+                .visibility(this.visibility)
+                .password(this.visibility ? null : this.password)
+                .nowMoney(0L)
+                .fundingImageUrl(this.fundingImageUrl)
+                .build();
     }
 }
 

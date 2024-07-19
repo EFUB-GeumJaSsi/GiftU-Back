@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class S3ImageService {
     }
 
     private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + uploadFile.getName();
+        String fileName = dirName + "/" + UUID.randomUUID() + "_" + uploadFile.getName(); //UUID로 이미지 고유하게 식별함
         putS3(uploadFile, fileName);
         removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제
         return fileName;  // 업로드된 파일의 이름 반환

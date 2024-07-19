@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
@@ -15,4 +17,7 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
 
     @Query("SELECT f FROM Funding f WHERE f.user.id = :userId and f.status = :status")
     List<Funding> findAllByUserAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
+
+    @Query("SELECT f FROM Funding f WHERE f.user.id = :userId and f.fundingEndDate = :fundingEndDate")
+    List<Funding> findAllByUserAndFundingEndDate(@Param("userId")Long userId, @Param("fundingEndDate") LocalDate fundingEndDate);
 }

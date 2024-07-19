@@ -1,8 +1,16 @@
+<<<<<<<< HEAD:src/main/java/efub/gift_u/domain/oauth/SecurityConfig.java
 package efub.gift_u.domain.oauth;
 import efub.gift_u.domain.oauth.errorHandler.CustomAccessDeniedHandler;
 import efub.gift_u.domain.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
 import efub.gift_u.domain.oauth.jwt.JwtAuthenticationFilter;
 import efub.gift_u.domain.oauth.jwt.JwtService;
+========
+package efub.gift_u.config;
+import efub.gift_u.oauth.errorHandler.CustomAccessDeniedHandler;
+import efub.gift_u.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
+import efub.gift_u.oauth.jwt.JwtAuthenticationFilter;
+import efub.gift_u.oauth.jwt.JwtService;
+>>>>>>>> development:src/main/java/efub/gift_u/global/config/SecurityConfig.java
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +19,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -24,8 +38,31 @@ public class SecurityConfig {
     // 인증이 필요없는 URL 패턴 목록을 정의
     private static final String[] AUTH_WHITELIST = {
             "/api/oauth/kakao",
-            "/fundings/{fundingId}"
+            "/fundings/{fundingId}",
+            "/api/oauth/reissue"
     };
+
+    // cors 설정
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 프론트엔드의 도메인이 들어가는 파트입니다.
+        // 미리 짝개발자에게 이야기해, 배포된 도메인을 받아 새로 도메인을 allow 해줍니다.
+        // 만약 "https://test.com"라는 도메인을 전달받았다면, 아래 코드에 추가로 다음과 같이 입력합니다.
+        // configuration.setAllowedOrigins(Arrays.asList(..., "https://test.com"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000", "https://api.giftu.n-e.kr"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,6 +71,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //csrf 공격을 대비하기 위한 csrf 토큰 disable 하기
                 .formLogin(formLogin -> formLogin.disable()) //form login 비활성화 jwt를 사용하고 있으므로 폼 기반 로그인은 필요하지 않다.
                 .httpBasic(httpBasic -> httpBasic.disable())//http 기본 인증은 사용자 이름과 비밀번호를 평문으로 전송하기 때문에 보안적으로 취약, 기본 인증을 비활성화 하고 있음
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> { // 세션 사용 안함
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
