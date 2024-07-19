@@ -47,5 +47,29 @@ public class GiftService {
     public void saveAll(List<Gift> gifts) {
         giftRepository.saveAll(gifts);
     }
+
+    // S3 URL에서 Key를 추출
+    private String extractS3KeyFromUrl(String url) {
+        String keyPrefix = ".com/";
+        int startIndex = url.indexOf(keyPrefix) + keyPrefix.length(); // .com/ 뒤의 문자열부터 Key 시작
+        return url.substring(startIndex);
+    }
+
+
+    public void deleteGifts(Funding funding) {
+        List<Gift> gifts = funding.getGiftList();
+        for (Gift gift : gifts) {
+            if (gift.getGiftImageUrl() != null) {
+                String giftImageKey = extractS3KeyFromUrl(gift.getGiftImageUrl());
+                s3ImageService.delete(giftImageKey);
+            }
+            giftRepository.delete(gift);
+        }
+    }
+
+
+
 }
+
+
 

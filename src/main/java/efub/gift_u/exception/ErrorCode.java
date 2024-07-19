@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, "비밀번호는 4자리 숫자여야 합니다."),
     FUNDING_END_DATE_BEFORE_START(HttpStatus.BAD_REQUEST, "펀딩 종료일이 오늘을 우선할 수 없습니다. 펀딩 종료일을 오늘 이후로 설정해주세요."),
     FUNDING_NOT_FOUND(HttpStatus.NOT_FOUND , "해당 펀딩을 찾을 수 없습니다."),
+    FUNDING_DELETE_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "펀딩 삭제 권한이 없습니다."),
 
     // Participation
     PARTICIPATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 펀딩에 참여자가 존재하지 않습니다."),

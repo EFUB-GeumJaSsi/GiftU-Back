@@ -61,8 +61,8 @@ public class FundingService {
 
     /* 펀딩 상세 조회 */
     public ResponseEntity<FundingResponseDetailDto> getFundingDetail(Long fundingId) {
-         Funding funding = fundingRepository.findById(fundingId)
-                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
 
         return  ResponseEntity.status(HttpStatus.OK)
                 .body(FundingResponseDetailDto.from(funding ,  participationService.getParticipationDetail(funding)));
@@ -144,7 +144,16 @@ public class FundingService {
             return false;
         }
     }
+    // 펀딩 삭제
+    @Transactional
+    public void deleteFunding(Long fundingId, User user) {
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        if (!funding.getUser().getUserId().equals(user.getUserId())) {
+            throw new CustomException(ErrorCode.FUNDING_DELETE_ACCESS_DENIED);
+        }
+        giftService.deleteGifts(funding);
+        fundingRepository.delete(funding);
+    }
 
 }
-
-

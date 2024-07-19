@@ -80,13 +80,21 @@ public class FundingController {
     /* 펀딩 비밀번호 확인*/
     @PostMapping("/{fundingId}/allow")
     public ResponseEntity<Boolean> isAllowed( @PathVariable("fundingId") Long fundingId , @RequestBody FundingPasswordDto fundingPasswordDto){
-       if(fundingService.isAllowed(fundingId , fundingPasswordDto)){
-           return ResponseEntity.status(HttpStatus.OK)
-                   .body(true);
-       }
-       else  return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        if(fundingService.isAllowed(fundingId , fundingPasswordDto)){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(true);
+        }
+        else  return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(false);
     }
 
+    //펀딩 삭제
+    @DeleteMapping("/{fundingId}")
+    public ResponseEntity<String> deleteFunding(@AuthUser User user, @PathVariable Long fundingId){
+        fundingService.deleteFunding(fundingId, user);
+        return ResponseEntity.ok("펀딩이 성공적으로 삭제되었습니다.");
+    }
+
 }
+
 
