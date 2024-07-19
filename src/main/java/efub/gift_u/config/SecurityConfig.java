@@ -1,4 +1,4 @@
-package efub.gift_u.oauth;
+package efub.gift_u.config;
 import efub.gift_u.oauth.errorHandler.CustomAccessDeniedHandler;
 import efub.gift_u.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
 import efub.gift_u.oauth.jwt.JwtAuthenticationFilter;
