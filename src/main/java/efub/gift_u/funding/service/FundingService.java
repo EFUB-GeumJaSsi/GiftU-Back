@@ -38,7 +38,15 @@ public class FundingService {
     private final FriendService friendService;
     private final GiftService giftService;
 
+    //펀딩 개설
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
+
+        if (requestDto.getFundingEndDate() == null || requestDto.getFundingEndDate().isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.FUNDING_END_DATE_BEFORE_START);
+        }
+        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || String.valueOf(requestDto.getPassword()).length() != 4)) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD_PATTERN);
+        }
 
         Funding funding = requestDto.toEntity(user);
         Funding savedFunding = fundingRepository.save(funding);
