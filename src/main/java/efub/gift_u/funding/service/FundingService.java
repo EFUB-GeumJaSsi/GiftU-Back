@@ -1,6 +1,5 @@
 package efub.gift_u.funding.service;
 
-import efub.gift_u.S3Image.service.S3ImageService;
 import efub.gift_u.exception.CustomException;
 import efub.gift_u.exception.ErrorCode;
 import efub.gift_u.friend.dto.FriendDetailDto;
@@ -11,7 +10,7 @@ import efub.gift_u.funding.domain.FundingStatus;
 import efub.gift_u.funding.dto.*;
 import efub.gift_u.funding.repository.FundingRepository;
 import efub.gift_u.gift.domain.Gift;
-import efub.gift_u.gift.repository.GiftRepository;
+import efub.gift_u.gift.service.GiftService;
 import efub.gift_u.participation.repository.ParticipationRepository;
 import efub.gift_u.participation.service.ParticipationService;
 import efub.gift_u.user.domain.User;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,59 +33,19 @@ import static efub.gift_u.funding.domain.FundingStatus.IN_PROGRESS;
 @RequiredArgsConstructor
 public class FundingService {
     private final FundingRepository fundingRepository;
-    private final GiftRepository giftRepository;
     private final ParticipationService participationService;
     private final ParticipationRepository participationRepository;
     private final FriendService friendService;
-    private final S3ImageService s3ImageService;
+    private final GiftService giftService;
 
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
 
-        Long password = requestDto.getVisibility() ? null : requestDto.getPassword();
-        Funding funding = Funding.builder()
-                .user(user)
-                .fundingTitle(requestDto.getFundingTitle())
-                .fundingContent(requestDto.getFundingContent())
-                .fundingStartDate(LocalDate.now())
-                .fundingEndDate(requestDto.getFundingEndDate())
-                .status(FundingStatus.IN_PROGRESS)
-                .deliveryAddress(requestDto.getDeliveryAddress())
-                .visibility(requestDto.getVisibility())
-                .password(password)
-                .nowMoney(0L)
-                .fundingImageUrl(requestDto.getFundingImageUrl())
-                .build();
-
+        Funding funding = requestDto.toEntity(user);
         Funding savedFunding = fundingRepository.save(funding);
 
-        List<Gift> gifts = requestDto.getGifts().stream()
-                .map(giftDto -> {
-                    String giftImageUrl = null;
-                    int index = requestDto.getGifts().indexOf(giftDto);
-                    if (giftImages != null && !giftImages.isEmpty() && giftImages.size() > index) {
-                        MultipartFile giftImage = giftImages.get(index);
-                        if (giftImage != null && !giftImage.isEmpty()) {
-                            try {
-                                String giftFileName = s3ImageService.upload(giftImage, "images/giftImages"); // S3에 이미지 업로드
-                                giftImageUrl = s3ImageService.getFileUrl(giftFileName); // 업로드된 파일의 URL 가져오기
-                            } catch (IOException e) {
-                                throw new RuntimeException("Gift image upload failed", e);
-                            }
-                        }
-                    }
-
-                    return Gift.builder()
-                            .funding(savedFunding)
-                            .giftName(giftDto.getGiftName())
-                            .price(Long.valueOf(giftDto.getPrice()))
-                            .giftUrl(giftDto.getGiftUrl())
-                            .giftImageUrl(giftImageUrl)
-                            .build();
-                })
-                .collect(Collectors.toList());
-
+        List<Gift> gifts = giftService.createGifts(savedFunding, requestDto.getGifts(), giftImages);
         savedFunding.getGiftList().addAll(gifts);
-        giftRepository.saveAll(gifts);
+        giftService.saveAll(gifts);
 
         return FundingResponseDto.fromEntity(savedFunding);
     }
