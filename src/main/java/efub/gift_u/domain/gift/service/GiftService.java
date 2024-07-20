@@ -1,10 +1,10 @@
 package efub.gift_u.domain.gift.service;
 
-import efub.gift_u.S3Image.service.S3ImageService;
-import efub.gift_u.gift.dto.GiftRequestDto;
-import efub.gift_u.gift.domain.Gift;
-import efub.gift_u.funding.domain.Funding;
-import efub.gift_u.gift.repository.GiftRepository;
+import efub.gift_u.global.S3Image.service.S3ImageService;
+import efub.gift_u.domain.gift.dto.GiftRequestDto;
+import efub.gift_u.domain.gift.domain.Gift;
+import efub.gift_u.domain.funding.domain.Funding;
+import efub.gift_u.domain.gift.repository.GiftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

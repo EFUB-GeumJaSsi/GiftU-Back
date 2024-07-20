@@ -1,16 +1,10 @@
-<<<<<<<< HEAD:src/main/java/efub/gift_u/domain/oauth/SecurityConfig.java
-package efub.gift_u.domain.oauth;
+package efub.gift_u.global.config;
+
 import efub.gift_u.domain.oauth.errorHandler.CustomAccessDeniedHandler;
 import efub.gift_u.domain.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
 import efub.gift_u.domain.oauth.jwt.JwtAuthenticationFilter;
 import efub.gift_u.domain.oauth.jwt.JwtService;
-========
-package efub.gift_u.config;
-import efub.gift_u.oauth.errorHandler.CustomAccessDeniedHandler;
-import efub.gift_u.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
-import efub.gift_u.oauth.jwt.JwtAuthenticationFilter;
-import efub.gift_u.oauth.jwt.JwtService;
->>>>>>>> development:src/main/java/efub/gift_u/global/config/SecurityConfig.java
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
     private final CustomJwtAuthenticationEntryPoint customJwtAuthenticationEntryPoint;
+
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     // 인증이 필요없는 URL 패턴 목록을 정의

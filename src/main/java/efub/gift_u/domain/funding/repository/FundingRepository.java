@@ -12,12 +12,12 @@ import java.util.List;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
 
-    @Query("SELECT f FROM Funding f WHERE f.user.id = :userId")
+    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId")
     List<Funding> findAllByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT f FROM Funding f WHERE f.user.id = :userId and f.status = :status")
+    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId and f.status = :status")
     List<Funding> findAllByUserAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
 
-    @Query("SELECT f FROM Funding f WHERE f.user.id = :userId and f.fundingEndDate = :fundingEndDate")
+    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId and f.fundingEndDate = :fundingEndDate")
     List<Funding> findAllByUserAndFundingEndDate(@Param("userId")Long userId, @Param("fundingEndDate") LocalDate fundingEndDate);
 }

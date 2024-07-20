@@ -1,8 +1,8 @@
-package efub.gift_u.oauth.controller;
+package efub.gift_u.domain.oauth.controller;
 
-import efub.gift_u.oauth.jwt.JwtService;
-import efub.gift_u.oauth.service.OAuthLoginService;
-import efub.gift_u.oauth.jwt.JwtTokens;
+import efub.gift_u.domain.oauth.jwt.JwtService;
+import efub.gift_u.domain.oauth.service.OAuthLoginService;
+import efub.gift_u.domain.oauth.jwt.JwtTokens;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package efub.gift_u.oauth.jwt;
+package efub.gift_u.domain.oauth.jwt;
 
-import efub.gift_u.exception.CustomException;
-import efub.gift_u.exception.ErrorCode;
+import efub.gift_u.global.exception.CustomException;
+import efub.gift_u.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.security.Key;
 import java.util.Date;
@@ -25,7 +26,9 @@ public class JwtService {
 
     private final Key key;
 
-    @Autowired
+//    @Autowired
+//    private final JwtRefreshTokenRepository jwtRefreshTokenRepository;
+
     private final JwtRefreshTokenRepository jwtRefreshTokenRepository;
 
     public JwtService(@Value("${jwt.secret-key}") String secretKey, JwtRefreshTokenRepository jwtRefreshTokenRepository) {

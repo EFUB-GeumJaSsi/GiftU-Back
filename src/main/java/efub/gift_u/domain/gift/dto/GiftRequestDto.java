@@ -1,7 +1,7 @@
 package efub.gift_u.domain.gift.dto;
 
-import efub.gift_u.funding.domain.Funding;
-import efub.gift_u.gift.domain.Gift;
+import efub.gift_u.domain.funding.domain.Funding;
+import efub.gift_u.domain.gift.domain.Gift;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

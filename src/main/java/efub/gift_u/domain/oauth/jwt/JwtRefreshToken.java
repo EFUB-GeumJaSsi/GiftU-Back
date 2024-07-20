@@ -1,4 +1,4 @@
-package efub.gift_u.oauth.jwt;
+package efub.gift_u.domain.oauth.jwt;
 
 import jakarta.persistence.*;
 import lombok.*;
