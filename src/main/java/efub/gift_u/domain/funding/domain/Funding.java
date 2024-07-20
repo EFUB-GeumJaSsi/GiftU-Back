@@ -87,4 +87,13 @@ public class Funding extends BaseTimeEntity {
         this.fundingImageUrl = fundingImageUrl;
         this.giftList = new ArrayList<>();
     }
+
+    //펀딩 현재 모인 금액으로 업데이트
+    public void updateNowMoney(Long toAddAmount){
+       if(toAddAmount != null && toAddAmount >0){
+           this.nowMoney = this.nowMoney + toAddAmount;
+       }
+    }
+
+
 }

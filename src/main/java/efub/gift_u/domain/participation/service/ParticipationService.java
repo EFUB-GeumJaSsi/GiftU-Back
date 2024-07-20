@@ -43,9 +43,12 @@ public class ParticipationService {
     public JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+           Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
+           funding.updateNowMoney(toAddAmount);
            Participation Participation = JoinRequestDto.toEntity(user , funding ,
                    requestDto.getContributionAmount() , requestDto.getAnonymity(),  requestDto.getMessage());
            Participation savedParticipation = participationRepository.save(Participation);
+
            JoinResponseDto dto = JoinResponseDto.from(savedParticipation);
            return dto;
     }
