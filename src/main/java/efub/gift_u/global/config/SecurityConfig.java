@@ -34,7 +34,8 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/oauth/kakao",
             "/fundings/{fundingId}",
-            "/api/oauth/reissue"
+            "/api/oauth/reissue",
+            "/fundings/{fundingId}/review"
     };
 
     // cors 설정
