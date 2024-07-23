@@ -31,11 +31,9 @@ public class NoticeController {
     }
 
     /* 모든 알림 조회 */
-//    @GetMapping
-//    public ResponseEntity<?> getAllNotice(@AuthUser User user){
-//        return noticeService.getAllNotice(user);
-//    }
-
-
+    @GetMapping
+    public ResponseEntity<?> getAllNotice(@AuthUser User user){
+        return noticeService.getAllNotice(user);
+    }
 
 }
