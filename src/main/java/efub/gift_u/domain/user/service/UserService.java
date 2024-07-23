@@ -16,8 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-
-    @Autowired
+    
     private final UserRepository userRepository;
     private final S3ImageService s3ImageService;
 
