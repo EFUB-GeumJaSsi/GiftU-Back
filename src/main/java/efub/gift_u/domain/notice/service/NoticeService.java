@@ -7,6 +7,7 @@ import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.notice.dto.FriendNoticeDto;
 import efub.gift_u.domain.notice.dto.FundingNoticeDto;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
+import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +46,12 @@ public class NoticeService {
                 .collect(Collectors.toList());
 
         firstNoticeDtos.addAll(secondNoticeDtos);
-        return firstNoticeDtos;
+        // 친구 알림 목록을 updatedAt를 최신순으로 정렬 : Stream API
+        List<FriendNoticeDto> sortedNotices = firstNoticeDtos.stream()
+                .sorted(Comparator.comparing(FriendNoticeDto::getUpdatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return sortedNotices;
     }
 
     /* 마감 임박 펀딩  조회 */

@@ -1,5 +1,6 @@
 package efub.gift_u.domain.participation.service;
 
+import efub.gift_u.domain.notice.dto.FriendNoticeDto;
 import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.participation.dto.JoinRequestDto;
 import efub.gift_u.domain.participation.dto.ParticipationResponseDto;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,7 +37,11 @@ public class ParticipationService {
             //throw new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND , "해당 펀딩에는 참여자가 없습니다.");
             return null;
         }
-        Collections.sort(participationList, Comparator.comparing(Participation::getContributionAmount).reversed());
+        // 기여 금액대로 참여자 정렬 : Stream API
+        List<Participation> sortedParticipation = participationList.stream()
+                .sorted(Comparator.comparing(Participation::getContributionAmount).reversed())
+                .collect(Collectors.toList());
+
         return ParticipationResponseDto.from(participationList);
     }
 
