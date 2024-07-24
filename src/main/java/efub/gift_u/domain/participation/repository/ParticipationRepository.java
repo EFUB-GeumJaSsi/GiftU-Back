@@ -14,10 +14,10 @@ public interface ParticipationRepository extends  JpaRepository<Participation, L
    
     List<Participation> findByFunding(Funding funding);
 
-    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId")
+    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId ORDER BY p.createdAt DESC")
     List<Funding> findAllFundingByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId and p.funding.status = :status")
+    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId and p.funding.status = :status ORDER BY p.createdAt DESC")
     List<Funding> findAllFundingByUserIdAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
 
 }
