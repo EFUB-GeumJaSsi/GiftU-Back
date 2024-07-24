@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 public class GiftResponseDto {
     private Long giftId;
     private String giftName;
-    private Integer price;
+    private Long price;
     private String giftUrl;
     private String giftImageUrl;
 
     @Builder
-    public GiftResponseDto(Long giftId, String giftName, Integer price, String giftUrl, String giftImageUrl) {
+    public GiftResponseDto(Long giftId, String giftName, Long price, String giftUrl, String giftImageUrl) {
         this.giftId = giftId;
         this.giftName = giftName;
         this.price = price;
@@ -28,7 +28,7 @@ public class GiftResponseDto {
         return GiftResponseDto.builder()
                 .giftId(gift.getGiftId())
                 .giftName(gift.getGiftName())
-                .price(Math.toIntExact(gift.getPrice()))
+                .price(gift.getPrice())
                 .giftUrl(gift.getGiftUrl())
                 .giftImageUrl(gift.getGiftImageUrl())
                 .build();
