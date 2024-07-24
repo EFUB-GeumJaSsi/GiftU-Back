@@ -104,7 +104,7 @@ public class NoticeService {
         // 친구 알림
         List<FriendNoticeDto> friendNoticeDto = friendNotice(user);
 
-        AllNoticeDto allNoticeDto = AllNoticeDto.from(today , fundingNoticeDtos , friendNoticeDto);
+        AllNoticeDto allNoticeDto = AllNoticeDto.from(fundingNoticeDtos , friendNoticeDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(allNoticeDto);

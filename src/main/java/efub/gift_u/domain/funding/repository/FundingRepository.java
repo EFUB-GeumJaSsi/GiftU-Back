@@ -20,4 +20,8 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
 
     @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId and f.fundingEndDate = :fundingEndDate")
     List<Funding> findAllByUserAndFundingEndDate(@Param("userId")Long userId, @Param("fundingEndDate") LocalDate fundingEndDate);
+
+    // 검색
+    @Query("SELECT f FROM Funding f where f.user.nickname LIKE %:searchWord% OR f.fundingTitle LIKE %:searchWord% OR f.fundingContent LIKE %:searchWord%")
+    List<Funding> fundByUserOrFundingTitleOrFundingContent(@Param("searchWord") String searchWord);
 }
