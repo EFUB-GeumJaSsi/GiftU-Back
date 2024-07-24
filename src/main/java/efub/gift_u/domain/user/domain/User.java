@@ -23,7 +23,7 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(length = 50, unique = true) //닉네임은 중복 불가
+    @Column(length = 8, unique = true) //닉네임은 중복 불가
     private String nickname;
 
     @Column(updatable = false)
