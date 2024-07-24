@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,6 +110,9 @@ public class FundingService {
         for (FriendDetailDto friend : friends) {
             fundings.addAll(fundingRepository.findAllByUserAndStatus(friend.getFriendId(), IN_PROGRESS));
         }
+        // 마감일 오름차순으로 정렬
+        fundings.sort(Comparator.comparing(Funding::getFundingEndDate));
+        // dto로 변환
         List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
