@@ -20,4 +20,5 @@ public interface ParticipationRepository extends  JpaRepository<Participation, L
     @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId and p.funding.status = :status")
     List<Funding> findAllFundingByUserIdAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
 
+
 }

@@ -17,7 +17,8 @@ public class ParticipationResponseDto {
 
 
      private Long participationId;
-     private Long userId;
+     private String nickname;
+     private String userImageUrl;
      private Boolean anonymous;
      private LocalDateTime created_at;
      private Long contributionAmount;
@@ -29,7 +30,8 @@ public class ParticipationResponseDto {
         for (Participation participation : participations) {
              ParticipationResponseDto dto = new ParticipationResponseDto(
                      participation.getParticipationId(),
-                     participation.getUser().getUserId(),
+                     participation.getUser().getNickname(),
+                     participation.getUser().getUserImageUrl(),
                      participation.getAnonymous(),
                      participation.getCreatedAt(),
                      participation.getContributionAmount(),
