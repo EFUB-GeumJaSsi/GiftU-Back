@@ -12,10 +12,10 @@ import java.util.List;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
 
-    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId")
+    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId ORDER BY f.createdAt DESC")
     List<Funding> findAllByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId and f.status = :status")
+    @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId and f.status = :status ORDER BY f.createdAt DESC")
     List<Funding> findAllByUserAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
 
     @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId and f.fundingEndDate = :fundingEndDate")
