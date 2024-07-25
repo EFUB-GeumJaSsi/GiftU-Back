@@ -4,6 +4,7 @@ import efub.gift_u.domain.friend.domain.Friend;
 import efub.gift_u.domain.friend.repository.FriendRepository;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
+import efub.gift_u.domain.notice.dto.AllNoticeDto;
 import efub.gift_u.domain.notice.dto.FriendNoticeDto;
 import efub.gift_u.domain.notice.dto.FundingNoticeDto;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
@@ -32,8 +33,12 @@ public class NoticeService {
     private final FriendRepository friendRepository;
     private final FundingRepository fundingRepository;
 
+    LocalDate today = LocalDate.now(); //오늘 날짜
+    
+
     /* 친구 알림 조회 , (현재 요청 상태인 것만) 함수  */
     private List<FriendNoticeDto> friendNotice(@AuthUser User user){
+
         // user_id가 first user인 경우 ,first user가 받는 알림은 first user에게 친구 신청을 한 경우,  pending_second_first
         List<Friend> noticeAllByFirstUser=  friendRepository.findAllByFirstUserAndStatus(user ,PENDING_SECOND_FIRST);
         List<FriendNoticeDto> firstNoticeDtos = noticeAllByFirstUser.stream()
@@ -56,7 +61,6 @@ public class NoticeService {
 
     /* 마감 임박 펀딩  조회 */
     private List<FundingNoticeDto> fundingNotice(@AuthUser  User user) {
-        LocalDate today = LocalDate.now(); //오늘 날짜
 
         List<Funding> deadlineFundings=  fundingRepository.findAllByUserId(user.getUserId());
 
@@ -102,7 +106,15 @@ public class NoticeService {
 
 
     /* 펀딩 전체 알림 조회 */
-//    public ResponseEntity<?> getAllNotice(User user) {
-//
-//    }
+    public ResponseEntity<?> getAllNotice(@AuthUser User user) {
+        // 펀딩 알림
+        List<FundingNoticeDto> fundingNoticeDtos = fundingNotice(user);
+        // 친구 알림
+        List<FriendNoticeDto> friendNoticeDto = friendNotice(user);
+
+        AllNoticeDto allNoticeDto = AllNoticeDto.from(today , fundingNoticeDtos , friendNoticeDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(allNoticeDto);
+    }
 }
