@@ -49,7 +49,7 @@ public class SecurityConfig {
         // configuration.setAllowedOrigins(Arrays.asList(..., "https://test.com"));
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000", "https://api.giftu.n-e.kr"));
-        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); //와일드카드 사용하지 않음
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
