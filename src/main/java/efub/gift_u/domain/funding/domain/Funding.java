@@ -1,5 +1,6 @@
 package efub.gift_u.domain.funding.domain;
 
+import efub.gift_u.domain.delivery.domain.Delivery;
 import efub.gift_u.domain.gift.domain.Gift;
 import efub.gift_u.global.entity.BaseTimeEntity;
 import efub.gift_u.domain.participation.domain.Participation;
@@ -45,8 +46,8 @@ public class Funding extends BaseTimeEntity {
     @Column(nullable = false)
     private FundingStatus status;
 
-    @Column(nullable = false)
-    private String deliveryAddress;
+    @Embedded
+    private Delivery delivery;
 
     @Column(nullable = false)
     private Boolean visibility;
@@ -73,14 +74,14 @@ public class Funding extends BaseTimeEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Funding(User user, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, String deliveryAddress, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
+    public Funding(User user, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, Delivery delivery, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
         this.user = user;
         this.fundingTitle = fundingTitle;
         this.fundingContent = fundingContent;
         this.fundingStartDate = fundingStartDate;
         this.fundingEndDate = fundingEndDate;
         this.status = status;
-        this.deliveryAddress = deliveryAddress;
+        this.delivery = delivery;
         this.visibility = visibility;
         this.password = password;
         this.nowMoney = nowMoney;
