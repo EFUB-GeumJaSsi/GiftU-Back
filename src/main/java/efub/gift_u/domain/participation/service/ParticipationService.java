@@ -45,7 +45,7 @@ public class ParticipationService {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
            // 펀딩 개최자와 참여자가 동일인물인지 확인
-           if (!Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
+           if (Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
                 throw new CustomException(ErrorCode.INVALID_USER);
            }
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
