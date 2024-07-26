@@ -4,7 +4,6 @@ import efub.gift_u.domain.funding.dto.*;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.gift.dto.GiftResponseDto;
 import efub.gift_u.domain.review.repository.ReviewRepository;
-import efub.gift_u.global.S3Image.service.S3ImageService;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
 import efub.gift_u.domain.friend.dto.FriendDetailDto;
@@ -62,7 +61,15 @@ public class FundingService {
         savedFunding.getGiftList().addAll(gifts);
         giftService.saveAll(gifts);
 
-        return FundingResponseDto.fromEntity(savedFunding);
+        Gift mostExpensiveGift = gifts.get(0);
+        for (Gift gift : gifts) {
+            if (gift.getPrice() > mostExpensiveGift.getPrice()) {
+                mostExpensiveGift = gift;
+            }
+        }
+        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
+
+        return FundingResponseDto.fromEntity(savedFunding, fundingImageUrl);
     }
 
 

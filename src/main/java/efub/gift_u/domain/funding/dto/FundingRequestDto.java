@@ -48,7 +48,7 @@ public class FundingRequestDto {
                 .visibility(this.visibility)
                 .password(this.visibility ? null : this.password)
                 .nowMoney(0L)
-                .fundingImageUrl(this.fundingImageUrl)
+                .fundingImageUrl("")
                 .build();
     }
 }

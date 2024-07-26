@@ -49,7 +49,7 @@ public class FundingResponseDto {
         this.gifts = gifts;
     }
 
-    public static FundingResponseDto fromEntity(Funding funding) {
+    public static FundingResponseDto fromEntity(Funding funding, String fundingImageUrl) {
         List<GiftResponseDto> gifts = funding.getGiftList().stream()
                 .map(GiftResponseDto::fromEntity)
                 .collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class FundingResponseDto {
                 .visibility(funding.getVisibility())
                 .password(funding.getPassword() != null ? Integer.parseInt(String.valueOf(funding.getPassword())) : null)
                 .nowMoney(funding.getNowMoney())
-                .fundingImageUrl(funding.getFundingImageUrl())
+                .fundingImageUrl(fundingImageUrl)
                 .gifts(gifts)
                 .build();
     }
