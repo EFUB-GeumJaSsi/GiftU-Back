@@ -91,7 +91,7 @@ public class Funding extends BaseTimeEntity {
 
     //펀딩 현재 모인 금액으로 업데이트
     public void updateNowMoney(Long toAddAmount){
-       if(toAddAmount != null && toAddAmount >0){
+       if(toAddAmount != null){
            this.nowMoney = this.nowMoney + toAddAmount;
        }
     }
