@@ -50,7 +50,7 @@ public class FundingService {
         if (requestDto.getFundingEndDate() == null || requestDto.getFundingEndDate().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.FUNDING_END_DATE_BEFORE_START);
         }
-        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || String.valueOf(requestDto.getPassword()).length() != 4)) {
+        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || requestDto.getPassword().length() != 4)) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD_PATTERN);
         }
 
@@ -159,7 +159,7 @@ public class FundingService {
     public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
-        Long compPassword = fundingPasswordDto.getPassword();
+        String compPassword = fundingPasswordDto.getPassword();
         return compPassword.equals(funding.getPassword());
     }
     // 펀딩 삭제

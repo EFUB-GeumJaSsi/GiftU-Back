@@ -27,13 +27,13 @@ public class FundingResponseDto {
     private LocalDateTime createdAt;
     private Delivery delivery;
     private Boolean visibility;
-    private Integer password;
+    private String password;
     private Long nowMoney;
     private String fundingImageUrl;
     private List<GiftResponseDto> gifts;
 
     @Builder
-    public FundingResponseDto(Long fundingId, Long userId, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, LocalDateTime createdAt, Delivery delivery, Boolean visibility, Integer password, Long nowMoney, String fundingImageUrl, List<GiftResponseDto> gifts) {
+    public FundingResponseDto(Long fundingId, Long userId, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, LocalDateTime createdAt, Delivery delivery, Boolean visibility, String password, Long nowMoney, String fundingImageUrl, List<GiftResponseDto> gifts) {
         this.fundingId = fundingId;
         this.userId = userId;
         this.fundingTitle = fundingTitle;
@@ -66,7 +66,7 @@ public class FundingResponseDto {
                 .createdAt(funding.getCreatedAt())
                 .delivery(funding.getDelivery())
                 .visibility(funding.getVisibility())
-                .password(funding.getPassword() != null ? Integer.parseInt(String.valueOf(funding.getPassword())) : null)
+                .password(funding.getPassword() != null ? funding.getPassword() : null)
                 .nowMoney(funding.getNowMoney())
                 .fundingImageUrl(fundingImageUrl)
                 .gifts(gifts)

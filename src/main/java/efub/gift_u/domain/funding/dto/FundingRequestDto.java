@@ -25,11 +25,11 @@ public class FundingRequestDto {
     private String addressDetail1;
     private String addressDetail2;
     private Boolean visibility;
-    private Long password;
+    private String password;
     private List<GiftRequestDto> gifts;
 
     @Builder
-    public FundingRequestDto(String fundingTitle, String fundingContent, LocalDate fundingEndDate, String name, String phoneNumber, String addressNumber, String addressDetail1, String addressDetail2, Boolean visibility, Long password, List<GiftRequestDto> gifts) {
+    public FundingRequestDto(String fundingTitle, String fundingContent, LocalDate fundingEndDate, String name, String phoneNumber, String addressNumber, String addressDetail1, String addressDetail2, Boolean visibility, String password, List<GiftRequestDto> gifts) {
         this.fundingTitle = fundingTitle;
         this.fundingContent = fundingContent;
         this.fundingEndDate = fundingEndDate;
