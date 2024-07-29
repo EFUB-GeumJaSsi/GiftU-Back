@@ -3,6 +3,7 @@ package efub.gift_u.domain.funding.service;
 import efub.gift_u.domain.funding.dto.*;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.gift.dto.GiftResponseDto;
+import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.review.repository.ReviewRepository;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
