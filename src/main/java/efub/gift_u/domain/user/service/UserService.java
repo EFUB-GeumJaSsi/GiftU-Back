@@ -1,5 +1,8 @@
 package efub.gift_u.domain.user.service;
 
+import efub.gift_u.domain.friend.service.FriendService;
+import efub.gift_u.domain.user.dto.UserResponseDto;
+import efub.gift_u.domain.user.dto.UserUpdateResponseDto;
 import efub.gift_u.domain.user.repository.UserRepository;
 import efub.gift_u.global.S3Image.service.S3ImageService;
 import efub.gift_u.domain.user.domain.User;
@@ -7,7 +10,6 @@ import efub.gift_u.domain.user.dto.UserUpdateRequestDto;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +19,6 @@ import java.io.IOException;
 @Service
 public class UserService {
 
-    @Autowired
     private final UserRepository userRepository;
     private final S3ImageService s3ImageService;
 
@@ -26,13 +27,11 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 email를 가진 User를 찾을 수 없습니다. email="+email));
     }
 
-    public User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 id를 가진 User를 찾을 수 없습니다.id="+id));
-    }
 
+    /* 유저 정보 수정 */
     @Transactional
     public User updateUser(User user, UserUpdateRequestDto requestDto, MultipartFile multipartFile) throws IOException {
+        // 닉네임 중복 체크
         if (!user.getNickname().equals(requestDto.getNickname()) &&
                 userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
@@ -58,6 +57,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
+
+    /* 유저 삭제 */
     @Transactional
     public void deleteUser(User user){
 

@@ -4,8 +4,8 @@ import efub.gift_u.domain.friend.domain.Friend;
 import efub.gift_u.domain.friend.repository.FriendRepository;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
-import efub.gift_u.domain.notice.dto.FriendNoticeDto;
-import efub.gift_u.domain.notice.dto.FundingNoticeDto;
+import efub.gift_u.domain.gift.domain.Gift;
+import efub.gift_u.domain.notice.dto.*;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +31,13 @@ public class NoticeService {
     private final FriendRepository friendRepository;
     private final FundingRepository fundingRepository;
 
+    LocalDate today = LocalDate.now(); //오늘 날짜
+    LocalDateTime now = LocalDateTime.now();
+    
+
     /* 친구 알림 조회 , (현재 요청 상태인 것만) 함수  */
     private List<FriendNoticeDto> friendNotice(@AuthUser User user){
+
         // user_id가 first user인 경우 ,first user가 받는 알림은 first user에게 친구 신청을 한 경우,  pending_second_first
         List<Friend> noticeAllByFirstUser=  friendRepository.findAllByFirstUserAndStatus(user ,PENDING_SECOND_FIRST);
         List<FriendNoticeDto> firstNoticeDtos = noticeAllByFirstUser.stream()
@@ -43,12 +50,16 @@ public class NoticeService {
                 .collect(Collectors.toList());
 
         firstNoticeDtos.addAll(secondNoticeDtos);
-        return firstNoticeDtos;
+        // 친구 알림 목록을 updatedAt를 최신순으로 정렬 : Stream API
+        List<FriendNoticeDto> sortedNotices = firstNoticeDtos.stream()
+                .sorted(Comparator.comparing(FriendNoticeDto::getUpdatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return sortedNotices;
     }
 
-    /* 마감 임박 펀딩  조회 */
-    private List<FundingNoticeDto> fundingNotice(@AuthUser  User user) {
-        LocalDate today = LocalDate.now(); //오늘 날짜
+    /* 마감 임박 펀딩 조회 */
+    private List<FundingDueNoticeDto> fundingDueNotice(@AuthUser  User user) {
 
         List<Funding> deadlineFundings=  fundingRepository.findAllByUserId(user.getUserId());
 
@@ -60,14 +71,34 @@ public class NoticeService {
                 })
                 .collect(Collectors.toList());
 
-        List<FundingNoticeDto> fundingNoticeDtos = filteredFunding.stream()
-                .map(funding -> FundingNoticeDto.from(funding))
+        List<FundingDueNoticeDto> fundingDueNoticeDtos = filteredFunding.stream()
+                .map(funding -> FundingDueNoticeDto.from(funding))
                 .collect(Collectors.toList());
 
-        return fundingNoticeDtos;
+        return fundingDueNoticeDtos;
     }
 
-    /* 친구 알림 함수 조회 */
+    /*펀딩 달성도 조회*/
+    private List<FundingAchieveDto> fundingAchieveNotice(@AuthUser User user){
+            // 사용자가 개설한 펀딩
+            List<Funding> allFunding = fundingRepository.findAllByUserId(user.getUserId());
+
+            // 해당 펀딩의 현재 모인 금액 / 해당 펀딩의 최고액 선물 값
+            List<FundingAchieveDto> fundingAchieveDtos = allFunding.stream()
+                    .map(funding -> {
+                                double maxGiftPrice = funding.getGiftList().stream()
+                                        .mapToDouble(Gift::getPrice)
+                                        .max()
+                                        .orElse(0.0);
+                                double percent = maxGiftPrice>0? (funding.getNowMoney()/maxGiftPrice)*100 : 0.0;
+                                return FundingAchieveDto.from(funding , percent);
+                            })
+                    .collect(Collectors.toList());
+
+            return fundingAchieveDtos;
+    }
+
+    /* 친구 알림 조회 함수 */
     public ResponseEntity<?> getFriendNotice(@AuthUser User user){
 
         List<FriendNoticeDto> friendNoticeDto = friendNotice(user);
@@ -82,19 +113,32 @@ public class NoticeService {
 
     /* 펀딩 알림 조회 */
     public ResponseEntity<?> getFundingNotice(@AuthUser  User user){
-        List<FundingNoticeDto> fundingNoticeDtos = fundingNotice(user);
-
-        if(fundingNoticeDtos.isEmpty()){
+        List<FundingDueNoticeDto> fundingDueNoticeDtos = fundingDueNotice(user);
+        List<FundingAchieveDto> fundingAchieveDtos = fundingAchieveNotice(user);
+        FundingAllNoticeDto fundingAllNotices = FundingAllNoticeDto.from(now , fundingDueNoticeDtos , fundingAchieveDtos);
+        
+        if(fundingAllNotices.isEmpty()){
             return ResponseEntity.status(HttpStatus.OK)
                     .body("펀딩 알림이 없습니다.");
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(fundingNoticeDtos);
+                .body(fundingAllNotices);
     }
 
 
-    /* 펀딩 전체 알림 조회 */
-//    public ResponseEntity<?> getAllNotice(User user) {
-//
-//    }
+    /* 전체 알림 조회 */
+    public ResponseEntity<?> getAllNotice(@AuthUser User user) {
+        // 펀딩 알림 _ 펀딩 종료 관련
+        List<FundingDueNoticeDto> fundingDueNoticeDtos = fundingDueNotice(user);
+        //펀딩 알림 _ 펀딩 달성 퍼센트
+        List<FundingAchieveDto> fundingAchieveDtos = fundingAchieveNotice(user);
+
+        // 친구 알림
+        List<FriendNoticeDto> friendNoticeDto = friendNotice(user);
+
+        AllNoticeDto allNoticeDto = AllNoticeDto.from(now ,fundingDueNoticeDtos ,fundingAchieveDtos ,friendNoticeDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(allNoticeDto);
+    }
 }

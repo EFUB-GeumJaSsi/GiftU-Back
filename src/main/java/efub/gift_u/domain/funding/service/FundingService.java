@@ -2,7 +2,9 @@ package efub.gift_u.domain.funding.service;
 
 import efub.gift_u.domain.funding.dto.*;
 import efub.gift_u.domain.funding.repository.FundingRepository;
-import efub.gift_u.global.S3Image.service.S3ImageService;
+import efub.gift_u.domain.gift.dto.GiftResponseDto;
+import efub.gift_u.domain.gift.repository.GiftRepository;
+import efub.gift_u.domain.review.repository.ReviewRepository;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
 import efub.gift_u.domain.friend.dto.FriendDetailDto;
@@ -11,7 +13,6 @@ import efub.gift_u.domain.friend.service.FriendService;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.domain.FundingStatus;
 import efub.gift_u.domain.gift.domain.Gift;
-import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.gift.service.GiftService;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.participation.service.ParticipationService;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,8 @@ public class FundingService {
     private final ParticipationRepository participationRepository;
     private final FriendService friendService;
     private final GiftService giftService;
+    private final ReviewRepository reviewRepository;
+    private final GiftRepository giftRepository;
 
     //펀딩 개설
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
@@ -46,7 +50,7 @@ public class FundingService {
         if (requestDto.getFundingEndDate() == null || requestDto.getFundingEndDate().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.FUNDING_END_DATE_BEFORE_START);
         }
-        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || String.valueOf(requestDto.getPassword()).length() != 4)) {
+        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || requestDto.getPassword().length() != 4)) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD_PATTERN);
         }
 
@@ -57,7 +61,15 @@ public class FundingService {
         savedFunding.getGiftList().addAll(gifts);
         giftService.saveAll(gifts);
 
-        return FundingResponseDto.fromEntity(savedFunding);
+        Gift mostExpensiveGift = gifts.get(0);
+        for (Gift gift : gifts) {
+            if (gift.getPrice() > mostExpensiveGift.getPrice()) {
+                mostExpensiveGift = gift;
+            }
+        }
+        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
+
+        return FundingResponseDto.fromEntity(savedFunding, fundingImageUrl);
     }
 
 
@@ -65,9 +77,15 @@ public class FundingService {
     public ResponseEntity<FundingResponseDetailDto> getFundingDetail(Long fundingId) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        // 펀딩 선물 후기 존재 여부
+        boolean isExistedReview = reviewRepository.existsReviewByFunding(funding);
+        // 펀딩의 선물 목록
+        List<GiftResponseDto> giftResponseDtos = giftRepository.findAllByFunding(funding).stream()
+                .map((dtos) -> GiftResponseDto.fromEntity(dtos))
+                .collect(Collectors.toList());
 
         return  ResponseEntity.status(HttpStatus.OK)
-                .body(FundingResponseDetailDto.from(funding ,  participationService.getParticipationDetail(funding)));
+                .body(FundingResponseDetailDto.from(funding , participationService.getParticipationDetail(funding) , isExistedReview , giftResponseDtos));
     }
 
 
@@ -109,6 +127,9 @@ public class FundingService {
         for (FriendDetailDto friend : friends) {
             fundings.addAll(fundingRepository.findAllByUserAndStatus(friend.getFriendId(), IN_PROGRESS));
         }
+        // 마감일 오름차순으로 정렬
+        fundings.sort(Comparator.comparing(Funding::getFundingEndDate));
+        // dto로 변환
         List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
@@ -138,7 +159,7 @@ public class FundingService {
     public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
-        Long compPassword = fundingPasswordDto.getPassword();
+        String compPassword = fundingPasswordDto.getPassword();
         return compPassword.equals(funding.getPassword());
     }
     // 펀딩 삭제

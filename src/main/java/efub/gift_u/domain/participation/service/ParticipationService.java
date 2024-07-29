@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -25,7 +26,6 @@ public class ParticipationService {
 
     private final ParticipationRepository participationRepository;
     private final FundingRepository fundingRepository;
-
 
     /* 특정 펀딩에 대한 기여자 조회 */
     public List<ParticipationResponseDto> getParticipationDetail(Funding funding){
@@ -43,6 +43,10 @@ public class ParticipationService {
     public JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+           // 펀딩 개최자와 참여자가 동일인물인지 확인
+           if (Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
+                throw new CustomException(ErrorCode.INVALID_USER);
+           }
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
            funding.updateNowMoney(toAddAmount);
            Participation Participation = JoinRequestDto.toEntity(user , funding ,
@@ -51,5 +55,15 @@ public class ParticipationService {
 
            JoinResponseDto dto = JoinResponseDto.from(savedParticipation);
            return dto;
+    }
+
+    /* 펀딩 참여 취소 */
+    public void cancelFundingParticipation(User user, Long participationId) {
+        Participation participation = participationRepository.findByParticipationIdAndUserId(participationId, user.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
+
+        Funding funding = participation.getFunding();
+        funding.updateNowMoney(-participation.getContributionAmount());
+        participationRepository.delete(participation);
     }
 }

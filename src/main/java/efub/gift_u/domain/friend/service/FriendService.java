@@ -3,10 +3,7 @@ package efub.gift_u.domain.friend.service;
 import com.sun.jdi.request.DuplicateRequestException;
 import efub.gift_u.domain.friend.domain.Friend;
 import efub.gift_u.domain.friend.domain.FriendStatus;
-import efub.gift_u.domain.friend.dto.FriendDetailDto;
-import efub.gift_u.domain.friend.dto.FriendListResponseDto;
-import efub.gift_u.domain.friend.dto.FriendRequestDto;
-import efub.gift_u.domain.friend.dto.FriendResponseDto;
+import efub.gift_u.domain.friend.dto.*;
 import efub.gift_u.domain.friend.repository.FriendRepository;
 import efub.gift_u.domain.user.domain.User;
 import efub.gift_u.domain.user.service.UserService;
@@ -117,6 +114,13 @@ public class FriendService {
         int friendCount = friendsDto.size();
 
         return new FriendListResponseDto(friendsDto, friendCount);
+    }
+
+    // 최근 펀딩에 참여한 친구 목록 조회
+    public List<FriendParticipationListDto> getRecentFundingParticipationFriends(User user) {
+        return friendRepository.findFundingParticipationFriends(user.getUserId()).stream()
+                .map(FriendParticipationListDto::from)
+                .collect(Collectors.toList());
     }
 
     public String deleteFriend(User currentUser, Long friendId) {

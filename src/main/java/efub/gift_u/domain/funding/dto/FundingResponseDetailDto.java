@@ -3,6 +3,7 @@ package efub.gift_u.domain.funding.dto;
 
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.domain.FundingStatus;
+import efub.gift_u.domain.gift.dto.GiftResponseDto;
 import efub.gift_u.domain.participation.dto.ParticipationResponseDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,12 +27,15 @@ public class FundingResponseDetailDto {
     private FundingStatus status;
     private LocalDateTime createdAt;
     private Boolean visibility;
-    private Long password;
+    private String password;
     private Long nowMoney;
     private String fundingImageUrl;
     private List<ParticipationResponseDto> contributers ;
+    private boolean isExistedReview; // 선물 후기 존재 여부
+    private List<GiftResponseDto> giftList; // 해당 펀딩의 선물 목록
 
-    public static FundingResponseDetailDto from(Funding funding, List<ParticipationResponseDto> participationDetail) {
+    public static FundingResponseDetailDto from(Funding funding, List<ParticipationResponseDto> participationDetail ,
+                                                boolean isExistedReview , List<GiftResponseDto> giftList) {
         return new FundingResponseDetailDto(
                 funding.getFundingId(),
                 funding.getUser().getUserId(),
@@ -44,7 +48,9 @@ public class FundingResponseDetailDto {
                 funding.getPassword(),
                 funding.getNowMoney(),
                 funding.getFundingImageUrl(),
-                participationDetail
+                participationDetail,
+                isExistedReview,
+                giftList
         );
     }
 }

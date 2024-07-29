@@ -8,7 +8,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JoinResponseDto {
 
@@ -19,6 +18,17 @@ public class JoinResponseDto {
     private Boolean anonymous;
     private String message;
     private LocalDateTime created_at;
+
+    public JoinResponseDto(Long participationId , Long userId , Long fundingId , Long contributionAmount , Boolean anonymous , String message , LocalDateTime created_at){
+        this.participationId = participationId;
+        this.userId = userId;
+        this.fundingId = fundingId;
+        this.contributionAmount = contributionAmount;
+        this.anonymous = anonymous;
+        this.message = message;
+        this.created_at = created_at;
+    }
+
 
     public static JoinResponseDto from(Participation participation){
         return new JoinResponseDto(

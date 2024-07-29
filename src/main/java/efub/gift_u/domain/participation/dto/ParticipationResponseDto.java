@@ -2,7 +2,7 @@ package efub.gift_u.domain.participation.dto;
 
 import efub.gift_u.domain.participation.domain.Participation;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,17 +11,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ParticipationResponseDto {
 
 
      private Long participationId;
-     private Long userId;
+     private String nickname;
+     private String userImageUrl;
      private Boolean anonymous;
      private LocalDateTime created_at;
      private Long contributionAmount;
      private String message;
+
+     public ParticipationResponseDto(Long participationId , String nickname , String  userImageUrl , Boolean anonymous ,
+                                     LocalDateTime created_at , Long contributionAmount , String message){
+         this.participationId = participationId;
+         this.nickname = nickname;
+         this.userImageUrl = userImageUrl;
+         this.anonymous = anonymous;
+         this.created_at = created_at;
+         this.contributionAmount = contributionAmount;
+         this.message = message;
+     }
 
      public static List<ParticipationResponseDto> from(List<Participation> participations){
 
@@ -29,7 +40,8 @@ public class ParticipationResponseDto {
         for (Participation participation : participations) {
              ParticipationResponseDto dto = new ParticipationResponseDto(
                      participation.getParticipationId(),
-                     participation.getUser().getUserId(),
+                     participation.getUser().getNickname(),
+                     participation.getUser().getUserImageUrl(),
                      participation.getAnonymous(),
                      participation.getCreatedAt(),
                      participation.getContributionAmount(),

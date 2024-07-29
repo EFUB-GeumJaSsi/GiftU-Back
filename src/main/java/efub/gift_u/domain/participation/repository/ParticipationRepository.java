@@ -9,15 +9,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ParticipationRepository extends  JpaRepository<Participation, Long>{
    
     List<Participation> findByFunding(Funding funding);
 
-    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId")
+    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId ORDER BY p.createdAt DESC")// 최신순으로 정렬 (=참여일 역순)
     List<Funding> findAllFundingByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId and p.funding.status = :status")
+    @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId and p.funding.status = :status ORDER BY p.createdAt DESC") // 최신순으로 정렬 (=참여일 역순)
     List<Funding> findAllFundingByUserIdAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
 
+    @Query("SELECT p FROM Participation p WHERE p.participationId = :participationId AND p.user.userId = :userId")
+    Optional<Participation> findByParticipationIdAndUserId(@Param("participationId") Long participationId, @Param("userId") Long userId);
 }
