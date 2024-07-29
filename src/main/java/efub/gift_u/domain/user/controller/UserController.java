@@ -1,10 +1,12 @@
 package efub.gift_u.domain.user.controller;
 
+import efub.gift_u.domain.friend.service.FriendService;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
 import efub.gift_u.domain.oauth.service.KakaoApiClient;
+import efub.gift_u.domain.user.dto.UserResponseDto;
 import efub.gift_u.domain.user.service.UserService;
 import efub.gift_u.domain.user.domain.User;
-import efub.gift_u.domain.user.dto.UserResponseDto;
+import efub.gift_u.domain.user.dto.UserUpdateResponseDto;
 import efub.gift_u.domain.user.dto.UserUpdateRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +23,24 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoApiClient kakaoApiClient;
+    private final FriendService friendService;
 
     /* 회원 정보 조회 */
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public UserResponseDto getUser(@AuthUser User user){
-        return UserResponseDto.from(user);
+        int friendCount = friendService.getFriends(user).getFriendCount(); // 친구 수 가져오기
+        return UserResponseDto.from(user, friendCount);
     }
 
     /* 회원 정보 수정 */
     @PatchMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public UserResponseDto updateUser(@AuthUser User user,
-                                      @RequestPart(value = "userUpdateRequestDto") @Valid final UserUpdateRequestDto requestDto,
-                                      @RequestPart(value = "userImage", required = false) MultipartFile multipartFile) throws IOException{
+    public UserUpdateResponseDto updateUser(@AuthUser User user,
+                                            @RequestPart(value = "userUpdateRequestDto") @Valid final UserUpdateRequestDto requestDto,
+                                            @RequestPart(value = "userImage", required = false) MultipartFile multipartFile) throws IOException{
         User updatedUser = userService.updateUser(user, requestDto, multipartFile);
-        return UserResponseDto.from(updatedUser);
+        return UserUpdateResponseDto.from(updatedUser);
     }
 
     /* 회원 탈퇴 */
