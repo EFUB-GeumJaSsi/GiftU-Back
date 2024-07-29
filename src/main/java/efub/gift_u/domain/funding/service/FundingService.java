@@ -12,7 +12,6 @@ import efub.gift_u.domain.friend.service.FriendService;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.domain.FundingStatus;
 import efub.gift_u.domain.gift.domain.Gift;
-import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.gift.service.GiftService;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.participation.service.ParticipationService;
