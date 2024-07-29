@@ -40,6 +40,8 @@ public class FundingService {
     private final ParticipationRepository participationRepository;
     private final FriendService friendService;
     private final GiftService giftService;
+    private final ReviewRepository reviewRepository;
+    private final GiftRepository giftRepository;
 
     //펀딩 개설
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
@@ -66,9 +68,15 @@ public class FundingService {
     public ResponseEntity<FundingResponseDetailDto> getFundingDetail(Long fundingId) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
+        // 펀딩 선물 후기 존재 여부
+        boolean isExistedReview = reviewRepository.existsReviewByFunding(funding);
+        // 펀딩의 선물 목록
+        List<GiftResponseDto> giftResponseDtos = giftRepository.findAllByFunding(funding).stream()
+                .map((dtos) -> GiftResponseDto.fromEntity(dtos))
+                .collect(Collectors.toList());
 
         return  ResponseEntity.status(HttpStatus.OK)
-                .body(FundingResponseDetailDto.from(funding ,  participationService.getParticipationDetail(funding)));
+                .body(FundingResponseDetailDto.from(funding , participationService.getParticipationDetail(funding) , isExistedReview , giftResponseDtos));
     }
 
 

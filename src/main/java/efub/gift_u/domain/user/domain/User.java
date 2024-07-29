@@ -23,7 +23,7 @@ public class User {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(length = 50, unique = true) //닉네임은 중복 불가
+    @Column(length = 8, unique = true) //닉네임은 중복 불가
     private String nickname;
 
     @Column(updatable = false)
@@ -64,7 +64,6 @@ public class User {
     // 액세스 토큰 업데이트
     public void updateKakaoAccessToken(String kakaoAccessToken) {
         this.kakaoAccessToken = kakaoAccessToken;
-        System.out.println(" 카카오 액세스 토큰" + kakaoAccessToken);
     }
 
     // 회원 정보 수정

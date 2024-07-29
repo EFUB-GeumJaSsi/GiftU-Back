@@ -23,6 +23,7 @@ public class FundingController {
     private final FundingService fundingService;
 
     //펀딩 생성
+
     @PostMapping
     public ResponseEntity<FundingResponseDto> createFunding(@AuthUser User user,
                                                             @RequestPart("fundingRequestDto") FundingRequestDto requestDto,

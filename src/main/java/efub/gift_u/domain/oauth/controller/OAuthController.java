@@ -20,7 +20,6 @@ public class OAuthController {
     @ResponseBody
     @GetMapping("/kakao")
     public ResponseEntity<JwtTokens> kakaoCallback(@RequestParam(name="code") String code) {
-        System.out.println(code);
         return ResponseEntity.ok(oAuthLoginService.login(code));
     }
 
