@@ -26,12 +26,12 @@ public class AllNoticeDto {
     }
 
     public static AllNoticeDto from(LocalDateTime now ,List<FundingDueNoticeDto> fundingDueNoticeDto,List<FundingAchieveDto> fundingAchieveDtos, List<FriendNoticeDto> friendNoticeDtos){
-         return new AllNoticeDto(
-                 now,
-                 fundingDueNoticeDto,
-                 fundingAchieveDtos,
-                 friendNoticeDtos
-         );
+        return new AllNoticeDto(
+                now,
+                fundingDueNoticeDto,
+                fundingAchieveDtos,
+                friendNoticeDtos
+        );
     }
 
 }
