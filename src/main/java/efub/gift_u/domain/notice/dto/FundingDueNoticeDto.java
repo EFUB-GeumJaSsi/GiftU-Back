@@ -3,16 +3,14 @@ package efub.gift_u.domain.notice.dto;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.domain.FundingStatus;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FundingNoticeDto {
+public class FundingDueNoticeDto {
 
     private Long fundingId;
     private Long userId;
@@ -20,8 +18,16 @@ public class FundingNoticeDto {
     private LocalDate fundingEndDate;
     private FundingStatus status;
 
-    public static FundingNoticeDto from(Funding funding){
-        return new FundingNoticeDto(
+    public  FundingDueNoticeDto (Long fundingId , Long userId , String fundingTitle , LocalDate fundingEndDate , FundingStatus status ){
+        this.fundingId = fundingId;
+        this.userId = userId;
+        this.fundingTitle = fundingTitle;
+        this.fundingEndDate = fundingEndDate;
+        this.status = status;
+    }
+
+    public static FundingDueNoticeDto from(Funding funding){
+        return new FundingDueNoticeDto(
                 funding.getFundingId(),
                 funding.getUser().getUserId(),
                 funding.getFundingTitle(),
