@@ -4,6 +4,7 @@ import efub.gift_u.domain.funding.dto.*;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.gift.dto.GiftResponseDto;
 import efub.gift_u.domain.review.repository.ReviewRepository;
+import efub.gift_u.global.S3Image.service.S3ImageService;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
 import efub.gift_u.domain.friend.dto.FriendDetailDto;
@@ -50,7 +51,7 @@ public class FundingService {
         if (requestDto.getFundingEndDate() == null || requestDto.getFundingEndDate().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.FUNDING_END_DATE_BEFORE_START);
         }
-        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || requestDto.getPassword().length() != 4)) {
+        if (!requestDto.getVisibility() && (requestDto.getPassword() == null || String.valueOf(requestDto.getPassword()).length() != 4)) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD_PATTERN);
         }
 
@@ -61,15 +62,7 @@ public class FundingService {
         savedFunding.getGiftList().addAll(gifts);
         giftService.saveAll(gifts);
 
-        Gift mostExpensiveGift = gifts.get(0);
-        for (Gift gift : gifts) {
-            if (gift.getPrice() > mostExpensiveGift.getPrice()) {
-                mostExpensiveGift = gift;
-            }
-        }
-        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
-
-        return FundingResponseDto.fromEntity(savedFunding, fundingImageUrl);
+        return FundingResponseDto.fromEntity(savedFunding);
     }
 
 
@@ -159,7 +152,7 @@ public class FundingService {
     public Boolean isAllowed(Long fundingId, FundingPasswordDto fundingPasswordDto) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
-        String compPassword = fundingPasswordDto.getPassword();
+        Long compPassword = fundingPasswordDto.getPassword();
         return compPassword.equals(funding.getPassword());
     }
     // 펀딩 삭제

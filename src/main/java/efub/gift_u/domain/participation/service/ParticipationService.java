@@ -27,6 +27,7 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
     private final FundingRepository fundingRepository;
 
+
     /* 특정 펀딩에 대한 기여자 조회 */
     public List<ParticipationResponseDto> getParticipationDetail(Funding funding){
         List<Participation> participationList= participationRepository.findByFunding(funding);
@@ -44,7 +45,7 @@ public class ParticipationService {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
            // 펀딩 개최자와 참여자가 동일인물인지 확인
-           if (Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
+           if (!Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
                 throw new CustomException(ErrorCode.INVALID_USER);
            }
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
@@ -55,15 +56,5 @@ public class ParticipationService {
 
            JoinResponseDto dto = JoinResponseDto.from(savedParticipation);
            return dto;
-    }
-
-    /* 펀딩 참여 취소 */
-    public void cancelFundingParticipation(User user, Long participationId) {
-        Participation participation = participationRepository.findByParticipationIdAndUserId(participationId, user.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
-
-        Funding funding = participation.getFunding();
-        funding.updateNowMoney(-participation.getContributionAmount());
-        participationRepository.delete(participation);
     }
 }

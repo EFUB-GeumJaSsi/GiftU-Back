@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FundingPasswordDto {
 
-    private String password;
+    private Long password;
 }

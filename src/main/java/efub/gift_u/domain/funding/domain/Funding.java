@@ -1,6 +1,5 @@
 package efub.gift_u.domain.funding.domain;
 
-import efub.gift_u.domain.delivery.domain.Delivery;
 import efub.gift_u.domain.gift.domain.Gift;
 import efub.gift_u.global.entity.BaseTimeEntity;
 import efub.gift_u.domain.participation.domain.Participation;
@@ -46,14 +45,14 @@ public class Funding extends BaseTimeEntity {
     @Column(nullable = false)
     private FundingStatus status;
 
-    @Embedded
-    private Delivery delivery;
+    @Column(nullable = false)
+    private String deliveryAddress;
 
     @Column(nullable = false)
     private Boolean visibility;
 
     @Column
-    private String password;
+    private Long password; //비밀번호는 숫자 4자리
 
     @Column
     private Long nowMoney;
@@ -74,14 +73,14 @@ public class Funding extends BaseTimeEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Funding(User user, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, Delivery delivery, Boolean visibility, String password, Long nowMoney, String fundingImageUrl) {
+    public Funding(User user, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, String deliveryAddress, Boolean visibility, Long password, Long nowMoney, String fundingImageUrl) {
         this.user = user;
         this.fundingTitle = fundingTitle;
         this.fundingContent = fundingContent;
         this.fundingStartDate = fundingStartDate;
         this.fundingEndDate = fundingEndDate;
         this.status = status;
-        this.delivery = delivery;
+        this.deliveryAddress = deliveryAddress;
         this.visibility = visibility;
         this.password = password;
         this.nowMoney = nowMoney;
@@ -91,7 +90,7 @@ public class Funding extends BaseTimeEntity {
 
     //펀딩 현재 모인 금액으로 업데이트
     public void updateNowMoney(Long toAddAmount){
-       if(toAddAmount != null){
+       if(toAddAmount != null && toAddAmount >0){
            this.nowMoney = this.nowMoney + toAddAmount;
        }
     }

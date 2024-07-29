@@ -12,24 +12,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/fundings")
 @RequiredArgsConstructor
 public class ParticipationController {
 
     private final ParticipationService participationService;
 
     /* 펀딩 참여 */
-    @PostMapping("/{fundingId}")
+    @PostMapping("/fundings/{fundingId}")
     public ResponseEntity<JoinResponseDto> joinFunding(@AuthUser User user , @PathVariable("fundingId") Long fundingId , @RequestBody JoinRequestDto joinRequestDto){
          JoinResponseDto dto = participationService.joinFunding(user , fundingId , joinRequestDto);
           return ResponseEntity.status(HttpStatus.CREATED)
                   .body(dto);
-    }
-
-    /* 펀딩 참여 취소 */
-    @DeleteMapping("/participation/{participationId}")
-    public ResponseEntity<String> cancelFundingParticipation(@AuthUser User user, @PathVariable("participationId") Long participationId) {
-        participationService.cancelFundingParticipation(user, participationId);
-        return ResponseEntity.ok("펀딩 참여가 성공적으로 취소되었습니다.");
     }
 }

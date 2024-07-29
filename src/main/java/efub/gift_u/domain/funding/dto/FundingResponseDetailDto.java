@@ -27,7 +27,7 @@ public class FundingResponseDetailDto {
     private FundingStatus status;
     private LocalDateTime createdAt;
     private Boolean visibility;
-    private String password;
+    private Long password;
     private Long nowMoney;
     private String fundingImageUrl;
     private List<ParticipationResponseDto> contributers ;

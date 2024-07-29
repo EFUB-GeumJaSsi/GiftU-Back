@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ParticipationRepository extends  JpaRepository<Participation, Long>{
    
@@ -21,6 +20,5 @@ public interface ParticipationRepository extends  JpaRepository<Participation, L
     @Query("SELECT p.funding FROM Participation p WHERE p.user.userId = :userId and p.funding.status = :status ORDER BY p.createdAt DESC") // 최신순으로 정렬 (=참여일 역순)
     List<Funding> findAllFundingByUserIdAndStatus(@Param("userId") Long userId, @Param("status") FundingStatus status);
 
-    @Query("SELECT p FROM Participation p WHERE p.participationId = :participationId AND p.user.userId = :userId")
-    Optional<Participation> findByParticipationIdAndUserId(@Param("participationId") Long participationId, @Param("userId") Long userId);
+
 }

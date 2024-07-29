@@ -1,7 +1,6 @@
 package efub.gift_u.domain.friend.controller;
 
 import efub.gift_u.domain.friend.dto.FriendListResponseDto;
-import efub.gift_u.domain.friend.dto.FriendParticipationListDto;
 import efub.gift_u.domain.friend.dto.FriendRequestDto;
 import efub.gift_u.domain.friend.dto.FriendResponseDto;
 import efub.gift_u.domain.friend.service.FriendService;
@@ -10,8 +9,6 @@ import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -42,12 +39,6 @@ public class FriendController {
     @GetMapping
     public FriendListResponseDto getFriends(@AuthUser User user) {
         return friendService.getFriends(user);
-    }
-
-    // 최근 펀딩에 참여한 친구 목록 조회
-    @GetMapping("/participated")
-    public List<FriendParticipationListDto> getRecentFundingParticipationFriends(@AuthUser User user) {
-        return friendService.getRecentFundingParticipationFriends(user);
     }
 
     //친구 삭제

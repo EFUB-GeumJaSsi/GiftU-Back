@@ -1,6 +1,5 @@
 package efub.gift_u.domain.funding.dto;
 
-import efub.gift_u.domain.delivery.domain.Delivery;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.domain.FundingStatus;
 import efub.gift_u.domain.gift.dto.GiftResponseDto;
@@ -25,15 +24,15 @@ public class FundingResponseDto {
     private LocalDate fundingEndDate;
     private FundingStatus status;
     private LocalDateTime createdAt;
-    private Delivery delivery;
+    private String deliveryAddress;
     private Boolean visibility;
-    private String password;
+    private Integer password;
     private Long nowMoney;
     private String fundingImageUrl;
     private List<GiftResponseDto> gifts;
 
     @Builder
-    public FundingResponseDto(Long fundingId, Long userId, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, LocalDateTime createdAt, Delivery delivery, Boolean visibility, String password, Long nowMoney, String fundingImageUrl, List<GiftResponseDto> gifts) {
+    public FundingResponseDto(Long fundingId, Long userId, String fundingTitle, String fundingContent, LocalDate fundingStartDate, LocalDate fundingEndDate, FundingStatus status, LocalDateTime createdAt, String deliveryAddress, Boolean visibility, Integer password, Long nowMoney, String fundingImageUrl, List<GiftResponseDto> gifts) {
         this.fundingId = fundingId;
         this.userId = userId;
         this.fundingTitle = fundingTitle;
@@ -42,7 +41,7 @@ public class FundingResponseDto {
         this.fundingEndDate = fundingEndDate;
         this.status = status;
         this.createdAt = createdAt;
-        this.delivery = delivery;
+        this.deliveryAddress = deliveryAddress;
         this.visibility = visibility;
         this.password = password;
         this.nowMoney = nowMoney;
@@ -50,7 +49,7 @@ public class FundingResponseDto {
         this.gifts = gifts;
     }
 
-    public static FundingResponseDto fromEntity(Funding funding, String fundingImageUrl) {
+    public static FundingResponseDto fromEntity(Funding funding) {
         List<GiftResponseDto> gifts = funding.getGiftList().stream()
                 .map(GiftResponseDto::fromEntity)
                 .collect(Collectors.toList());
@@ -64,11 +63,11 @@ public class FundingResponseDto {
                 .fundingEndDate(funding.getFundingEndDate())
                 .status(funding.getStatus())
                 .createdAt(funding.getCreatedAt())
-                .delivery(funding.getDelivery())
+                .deliveryAddress(funding.getDeliveryAddress())
                 .visibility(funding.getVisibility())
-                .password(funding.getPassword() != null ? funding.getPassword() : null)
+                .password(funding.getPassword() != null ? Integer.parseInt(String.valueOf(funding.getPassword())) : null)
                 .nowMoney(funding.getNowMoney())
-                .fundingImageUrl(fundingImageUrl)
+                .fundingImageUrl(funding.getFundingImageUrl())
                 .gifts(gifts)
                 .build();
     }
