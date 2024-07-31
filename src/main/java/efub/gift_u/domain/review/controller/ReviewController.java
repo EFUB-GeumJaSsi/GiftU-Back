@@ -24,10 +24,8 @@ public class ReviewController {
 
     /* 리뷰 조회 */
     @GetMapping("/fundings/{fundingId}/review")
-    public ResponseEntity<ReviewResponseDto> getReview(@PathVariable("fundingId") Long fundingId){
-        ReviewResponseDto dto = reviewService.findReview(fundingId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(dto);
+    public ResponseEntity<?> getReview(@PathVariable("fundingId") Long fundingId){
+        return reviewService.findReview(fundingId);
     }
 
     /* 리뷰 수정 */

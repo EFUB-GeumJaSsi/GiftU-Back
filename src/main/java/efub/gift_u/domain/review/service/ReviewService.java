@@ -64,11 +64,12 @@ public class ReviewService {
     }
 
     /*리뷰 조회*/
-    public ReviewResponseDto findReview(Long fundingId) {
+    public ResponseEntity<?> findReview(Long fundingId) {
         Funding funding = findFunding(fundingId);
         Review review = reviewRepository.findByFunding(funding);
         ReviewResponseDto dto = ReviewResponseDto.from(review);
-        return dto;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(dto);
     }
 
     /* 리뷰 수정 */
