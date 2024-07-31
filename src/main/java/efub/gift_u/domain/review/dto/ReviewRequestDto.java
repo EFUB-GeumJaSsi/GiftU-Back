@@ -9,11 +9,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewRequestDto {
 
     private String reviewContent;
+
 
     public static Review toEntity( Funding funding , ReviewRequestDto requestDto){
         return Review.builder()
