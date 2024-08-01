@@ -96,5 +96,10 @@ public class Funding extends BaseTimeEntity {
        }
     }
 
-
+    //펀딩 상태 변경
+    public void terminateIfExpired(){
+        if (this.fundingEndDate.isBefore(LocalDate.now())){
+            this.status = FundingStatus.TERMINATED;
+        }
+    }
 }
