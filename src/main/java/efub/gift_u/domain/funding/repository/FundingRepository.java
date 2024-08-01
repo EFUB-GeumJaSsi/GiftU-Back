@@ -9,8 +9,11 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
+
+
 
     @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId ORDER BY f.createdAt DESC") // 최신순으로 정렬 (=개설일 역순)
     List<Funding> findAllByUserId(@Param("userId") Long userId);
