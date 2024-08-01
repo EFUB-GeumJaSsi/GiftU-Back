@@ -173,5 +173,13 @@ public class FundingService {
         giftService.deleteGifts(funding);
         fundingRepository.delete(funding);
     }
+    //펀딩 상태 업데이트
+    public void updateFundingStatus(){
+        List<Funding> fundings = fundingRepository.findAll();
+        for (Funding funding : fundings) {
+            funding.terminateIfExpired();
+            fundingRepository.save(funding);
+        }
+    }
 
 }
