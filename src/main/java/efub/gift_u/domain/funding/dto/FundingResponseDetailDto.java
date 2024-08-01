@@ -51,6 +51,7 @@ public class FundingResponseDetailDto {
         this.createdAt = createdAt;
         this.visibility = visibility;
         this.password = password;
+        this.nowMoney = nowMoney;
         this.fundingImageUrl = fundingImageUrl;
         this.contributers = contributers;
         this.isExistedReview = isExistedReview;

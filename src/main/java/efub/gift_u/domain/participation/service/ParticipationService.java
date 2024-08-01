@@ -10,7 +10,9 @@ import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.participation.dto.JoinResponseDto;
 import efub.gift_u.domain.user.domain.User;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
     private final FundingRepository fundingRepository;
 
+
     /* 특정 펀딩에 대한 기여자 조회 */
     public List<ParticipationResponseDto> getParticipationDetail(Funding funding){
         List<Participation> participationList= participationRepository.findByFunding(funding);
@@ -40,7 +43,7 @@ public class ParticipationService {
     }
 
     /* 펀딩 참여 */
-    public JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
+    public synchronized JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
            // 펀딩 개최자와 참여자가 동일인물인지 확인
@@ -49,7 +52,8 @@ public class ParticipationService {
            }
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
            funding.updateNowMoney(toAddAmount);
-           Participation Participation = JoinRequestDto.toEntity(user , funding ,
+
+           Participation Participation = JoinRequestDto.toEntity(user ,funding,
                    requestDto.getContributionAmount() , requestDto.getAnonymity(),  requestDto.getMessage());
            Participation savedParticipation = participationRepository.save(Participation);
 
