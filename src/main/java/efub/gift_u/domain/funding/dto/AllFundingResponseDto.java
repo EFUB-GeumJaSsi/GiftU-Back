@@ -9,4 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 public class AllFundingResponseDto {
     private List<IndividualFundingResponseDto> fundings;
+
+    public boolean isEmpty() {
+        return fundings.isEmpty();
+    }
 }
