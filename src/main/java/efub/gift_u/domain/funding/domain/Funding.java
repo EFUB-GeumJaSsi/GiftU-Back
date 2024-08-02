@@ -102,4 +102,9 @@ public class Funding extends BaseTimeEntity {
             this.status = FundingStatus.TERMINATED;
         }
     }
+
+    //펀딩 이미지 URL 업데이트
+    public void updateFundingImageUrl(String fundingImageUrl){
+        this.fundingImageUrl = fundingImageUrl;
+    }
 }
