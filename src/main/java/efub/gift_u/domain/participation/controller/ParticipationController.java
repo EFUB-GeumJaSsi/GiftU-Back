@@ -32,4 +32,10 @@ public class ParticipationController {
         participationService.cancelFundingParticipation(user, participationId);
         return ResponseEntity.ok("펀딩 참여가 성공적으로 취소되었습니다.");
     }
+
+    /*펀딩 익명성 변경 및 축하 메세지 변경 */
+//    @PatchMapping("/{fundingId}")
+//    public ResponseEntity<?> patchParticipationVisibilityAndMessage(@AuthUser User user , @PathVariable("fundingId") Long fundingId){
+//        return participationService.patchPaticipationVisibilityAndMessage(user , fundingId);
+//    }
 }

@@ -39,12 +39,12 @@ public class NoticeService {
     private List<FriendNoticeDto> friendNotice(@AuthUser User user){
 
         // user_id가 first user인 경우 ,first user가 받는 알림은 first user에게 친구 신청을 한 경우,  pending_second_first
-        List<Friend> noticeAllByFirstUser=  friendRepository.findAllByFirstUserAndStatus(user ,PENDING_SECOND_FIRST);
+        List<Friend> noticeAllByFirstUser=  friendRepository.findAllByFirstUserAndStatusWithFetch(user ,PENDING_SECOND_FIRST);
         List<FriendNoticeDto> firstNoticeDtos = noticeAllByFirstUser.stream()
                 .map(notice -> FriendNoticeDto.firstFrom(notice))
                 .collect(Collectors.toList());
         // user_id가 second user인 경우 , second user가 받는 알림은 second user에게 친구 신청을 한 경우 , pending_first_second
-        List<Friend> noticeAllBySecondUser = friendRepository.findAllBySecondUserAndStatus(user , PENDING_FIRST_SECOND);
+        List<Friend> noticeAllBySecondUser = friendRepository.findAllBySecondUserAndStatusWithFetch(user , PENDING_FIRST_SECOND);
         List<FriendNoticeDto> secondNoticeDtos = noticeAllBySecondUser.stream()
                 .map(notice -> FriendNoticeDto.secondFrom(notice))
                 .collect(Collectors.toList());
