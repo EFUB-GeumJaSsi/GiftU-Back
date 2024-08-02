@@ -42,6 +42,17 @@ public class FundingService {
     private final ReviewRepository reviewRepository;
     private final GiftRepository giftRepository;
 
+    //펀딩 이미지 URL 업데이트
+    public void updateFundingImageUrl(Funding funding){
+        Gift mostExpensiveGift = giftRepository.findAllByFunding(funding).stream()
+                .max(Comparator.comparing(Gift::getPrice))
+                .orElseThrow(()-> new CustomException(ErrorCode.NO_GIFTS_FOUND));
+
+        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
+        funding.updateFundingImageUrl(fundingImageUrl);
+        fundingRepository.save(funding);
+    }
+
     //펀딩 개설
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
 
@@ -59,15 +70,9 @@ public class FundingService {
         savedFunding.getGiftList().addAll(gifts);
         giftService.saveAll(gifts);
 
-        Gift mostExpensiveGift = gifts.get(0);
-        for (Gift gift : gifts) {
-            if (gift.getPrice() > mostExpensiveGift.getPrice()) {
-                mostExpensiveGift = gift;
-            }
-        }
-        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
+        updateFundingImageUrl(savedFunding);
 
-        return FundingResponseDto.fromEntity(savedFunding, fundingImageUrl);
+        return FundingResponseDto.fromEntity(savedFunding, savedFunding.getFundingImageUrl());
     }
 
 
@@ -81,6 +86,8 @@ public class FundingService {
         List<GiftResponseDto> giftResponseDtos = giftRepository.findAllByFunding(funding).stream()
                 .map((dtos) -> GiftResponseDto.fromEntity(dtos))
                 .collect(Collectors.toList());
+
+        updateFundingImageUrl(funding);
 
         return  ResponseEntity.status(HttpStatus.OK)
                 .body(FundingResponseDetailDto.from(funding , participationService.getParticipationDetail(funding) , isExistedReview , giftResponseDtos));
@@ -170,6 +177,14 @@ public class FundingService {
         }
         giftService.deleteGifts(funding);
         fundingRepository.delete(funding);
+    }
+    //펀딩 상태 업데이트
+    public void updateFundingStatus(){
+        List<Funding> fundings = fundingRepository.findAll();
+        for (Funding funding : fundings) {
+            funding.terminateIfExpired();
+            fundingRepository.save(funding);
+        }
     }
 
 
