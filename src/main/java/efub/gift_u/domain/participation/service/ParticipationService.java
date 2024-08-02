@@ -13,6 +13,7 @@ import efub.gift_u.domain.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,7 @@ public class ParticipationService {
     }
 
     /* 펀딩 참여 */
-    public synchronized JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
+    public JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
            // 펀딩 개최자와 참여자가 동일인물인지 확인
@@ -61,6 +62,7 @@ public class ParticipationService {
            return dto;
     }
 
+
     /* 펀딩 참여 취소 */
     public void cancelFundingParticipation(User user, Long participationId) {
         Participation participation = participationRepository.findByParticipationIdAndUserId(participationId, user.getUserId())
@@ -70,4 +72,9 @@ public class ParticipationService {
         funding.updateNowMoney(-participation.getContributionAmount());
         participationRepository.delete(participation);
     }
+
+//    public ResponseEntity<?> patchPaticipationVisibilityAndMessage(User user, Long fundingId) {
+//
+//
+//    }
 }

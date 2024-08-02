@@ -51,4 +51,6 @@ public class Participation extends BaseTimeEntity {
         this.anonymous = anonymous;
         this.message = message;
     }
+//
+//    public void updateVisibilityAndMessage(b)
 }
