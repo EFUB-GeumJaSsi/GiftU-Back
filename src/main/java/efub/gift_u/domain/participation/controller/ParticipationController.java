@@ -39,4 +39,10 @@ public class ParticipationController {
     public ResponseEntity<?> patchParticipationVisibilityAndMessage(@AuthUser User user , @PathVariable("participationId") Long participationId , @RequestBody ModifyRequestDto modifyRequestDto){
        return participationService.patchParticipationVisibilityAndMessage(user , participationId , modifyRequestDto);
     }
+
+    /*특정 펀딩의 사용자 참여 내역 조회*/
+    @GetMapping("/{fundingId}/participation")
+    public ResponseEntity<?> getMyParticipation(@AuthUser User user , @PathVariable("fundingId") Long fundingId){
+        return participationService.getMyParticipation(user , fundingId);
+    }
 }
