@@ -51,6 +51,16 @@ public class Participation extends BaseTimeEntity {
         this.anonymous = anonymous;
         this.message = message;
     }
-//
-//    public void updateVisibilityAndMessage(b)
+
+
+    // 펀딩 참여 익명성 여부 변경
+   public void updateVisibility(Boolean newAnonymous){
+         this.anonymous = newAnonymous;
+   }
+
+   // 펀딩 참여 메세지 변경
+    public void updateMessage(String newMessage){
+        this.message = newMessage;
+    }
+
 }

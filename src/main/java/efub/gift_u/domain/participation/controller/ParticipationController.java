@@ -4,6 +4,7 @@ package efub.gift_u.domain.participation.controller;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
 import efub.gift_u.domain.participation.dto.JoinRequestDto;
 import efub.gift_u.domain.participation.dto.JoinResponseDto;
+import efub.gift_u.domain.participation.dto.ModifyRequestDto;
 import efub.gift_u.domain.participation.service.ParticipationService;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,9 @@ public class ParticipationController {
     }
 
     /*펀딩 익명성 변경 및 축하 메세지 변경 */
-//    @PatchMapping("/{fundingId}")
-//    public ResponseEntity<?> patchParticipationVisibilityAndMessage(@AuthUser User user , @PathVariable("fundingId") Long fundingId){
-//        return participationService.patchPaticipationVisibilityAndMessage(user , fundingId);
-//    }
+
+    @PatchMapping("/participation/{participationId}")
+    public ResponseEntity<?> patchParticipationVisibilityAndMessage(@AuthUser User user , @PathVariable("participationId") Long participationId , @RequestBody ModifyRequestDto modifyRequestDto){
+       return participationService.patchParticipationVisibilityAndMessage(user , participationId , modifyRequestDto);
+    }
 }
