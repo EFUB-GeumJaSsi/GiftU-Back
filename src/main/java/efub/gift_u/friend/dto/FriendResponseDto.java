@@ -16,14 +16,16 @@ public class FriendResponseDto {
     private String friendNickname;
     private String friendEmail;
     private FriendStatus status;
+    private String userImageUrl;
 
-    public FriendResponseDto(Long friendTableId, Long firstUserId, Long secondUserId, String friendNickname, String friendEmail, FriendStatus status) {
+    public FriendResponseDto(Long friendTableId, Long firstUserId, Long secondUserId, String friendNickname, String friendEmail, FriendStatus status, String userImageUrl) {
         this.friendTableId = friendTableId;
         this.firstUserId = firstUserId;
         this.secondUserId = secondUserId;
         this.friendNickname = friendNickname;
         this.friendEmail = friendEmail;
         this.status = status;
+        this.userImageUrl = userImageUrl;
     }
 
     public static FriendResponseDto from(Friend friend, User user) {
@@ -34,7 +36,8 @@ public class FriendResponseDto {
                 friend.getSecondUser().getUserId(),
                 friendUser.getNickname(),
                 friendUser.getEmail(),
-                friend.getStatus()
+                friend.getStatus(),
+                friendUser.getUserImageUrl()
         );
     }
 }
