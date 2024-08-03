@@ -33,6 +33,7 @@ public class ParticipationService {
     private final GiftRepository giftRepository;
 
 
+
     /* 특정 펀딩에 대한 기여자 조회 */
     public List<ParticipationResponseDto> getParticipationDetail(Funding funding){
         List<Participation> participationList= participationRepository.findByFunding(funding);
@@ -69,6 +70,7 @@ public class ParticipationService {
            return dto;
     }
 
+
     /* 펀딩 참여 취소 */
     public void cancelFundingParticipation(User user, Long participationId) {
         Participation participation = participationRepository.findByParticipationIdAndUserId(participationId, user.getUserId())
@@ -79,14 +81,13 @@ public class ParticipationService {
         participationRepository.delete(participation);
     }
 
-
     /*펀딩 참여 익명성 및 메세지 수정*/
     public ResponseEntity<?> patchParticipationVisibilityAndMessage(User user, Long participationId , ModifyRequestDto modifyRequestDto) {
          Participation participation = participationRepository.findById(participationId)
                  .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
 
          if(!(participation.getUser().getUserId()).equals(user.getUserId())){ // 참여자 id와 요청 사용자 id가 다르다면
-             throw  new CustomException(ErrorCode.INVALID_USER); // 올바르지 않은 접
+             throw  new CustomException(ErrorCode.INVALID_USER); // 올바르지 않은 접근
          }
 
         participation.updateVisibility(modifyRequestDto.getAnonymity());
@@ -97,4 +98,5 @@ public class ParticipationService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(modifyResponseDto);
     }
+
 }

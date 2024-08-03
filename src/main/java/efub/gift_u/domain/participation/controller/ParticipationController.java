@@ -35,10 +35,9 @@ public class ParticipationController {
     }
 
     /*펀딩 익명성 변경 및 축하 메세지 변경 */
+
     @PatchMapping("/participation/{participationId}")
     public ResponseEntity<?> patchParticipationVisibilityAndMessage(@AuthUser User user , @PathVariable("participationId") Long participationId , @RequestBody ModifyRequestDto modifyRequestDto){
        return participationService.patchParticipationVisibilityAndMessage(user , participationId , modifyRequestDto);
     }
-
-
 }
