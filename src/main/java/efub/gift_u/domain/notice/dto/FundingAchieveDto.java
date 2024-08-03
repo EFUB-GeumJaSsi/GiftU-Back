@@ -10,11 +10,13 @@ import lombok.NoArgsConstructor;
 public class FundingAchieveDto {
        Long fundingId;
        String fundingTitle;
+       String fundingImageUrl;
        double percent;
 
-       public FundingAchieveDto(Long fundingId , String fundingTitle , double percent){
+       public FundingAchieveDto(Long fundingId , String fundingTitle ,String fundingImageUrl, double percent){
            this.fundingId = fundingId;
            this.fundingTitle = fundingTitle;
+           this.fundingImageUrl = fundingImageUrl;
            this.percent = percent;
        }
 
@@ -22,6 +24,7 @@ public class FundingAchieveDto {
            return new FundingAchieveDto(
                         funding.getFundingId(),
                         funding.getFundingTitle(),
+                         funding.getFundingImageUrl(),
                         percent
                    );
        }
