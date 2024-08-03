@@ -51,18 +51,19 @@ public class ParticipationService {
            if (Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
                 throw new CustomException(ErrorCode.INVALID_USER);
            }
+
            // 펀딩 참여 횟수를 1회로 제한
-           if(participationRepository.findParticipationUserIdByUserId(user.getUserId())){ //이미 펀딩에 참여했다면
-               throw new CustomException(ErrorCode.INVALID_ACCESS);
-           }
+//           if(participationRepository.findParticipationByUserId(user.getUserId()).isPresent()){ //이미 펀딩에 참여했다면
+//               throw new CustomException(ErrorCode.INVALID_ACCESS);
+//           }
 
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
            funding.updateNowMoney(toAddAmount);
 
            //가격 상한선 추가
-           if(funding.getNowMoney() > giftRepository.findMaxPriceByFundingId(fundingId)){
-               throw new CustomException(ErrorCode.OVER_MAX_LIMIT);
-           }
+//           if(funding.getNowMoney() > giftRepository.findMaxPriceByFundingId(fundingId)){
+//               throw new CustomException(ErrorCode.OVER_MAX_LIMIT);
+//           }
 
            Participation Participation = JoinRequestDto.toEntity(user ,funding,
                    requestDto.getContributionAmount() , requestDto.getAnonymity(),  requestDto.getMessage());
