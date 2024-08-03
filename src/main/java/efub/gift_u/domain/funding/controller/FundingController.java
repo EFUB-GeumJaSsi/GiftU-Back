@@ -20,6 +20,7 @@ import java.time.LocalDate;
 @RequestMapping("/fundings")
 @RequiredArgsConstructor
 public class FundingController {
+
     private final FundingService fundingService;
 
     //펀딩 생성
