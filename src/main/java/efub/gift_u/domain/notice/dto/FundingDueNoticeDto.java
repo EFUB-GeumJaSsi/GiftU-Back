@@ -15,13 +15,15 @@ public class FundingDueNoticeDto {
     private Long fundingId;
     private Long userId;
     private String fundingTitle;
+    private String fundingImageUrl;
     private LocalDate fundingEndDate;
     private FundingStatus status;
 
-    public  FundingDueNoticeDto (Long fundingId , Long userId , String fundingTitle , LocalDate fundingEndDate , FundingStatus status ){
+    public  FundingDueNoticeDto (Long fundingId , Long userId , String fundingTitle , String fundingImageUrl ,LocalDate fundingEndDate , FundingStatus status ){
         this.fundingId = fundingId;
         this.userId = userId;
         this.fundingTitle = fundingTitle;
+        this.fundingImageUrl = fundingImageUrl;
         this.fundingEndDate = fundingEndDate;
         this.status = status;
     }
@@ -31,6 +33,7 @@ public class FundingDueNoticeDto {
                 funding.getFundingId(),
                 funding.getUser().getUserId(),
                 funding.getFundingTitle(),
+                funding.getFundingImageUrl(), 
                 funding.getFundingEndDate(),
                 funding.getStatus()
         );
