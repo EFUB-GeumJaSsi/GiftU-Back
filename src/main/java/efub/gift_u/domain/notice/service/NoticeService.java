@@ -83,7 +83,7 @@ public class NoticeService {
             // 사용자가 개설한 펀딩
             List<Funding> allFunding = fundingRepository.findAllByUserId(user.getUserId());
 
-            // 해당 펀딩의 현재 모인 금액 / 해당 펀딩의 최고액 선물 값
+            // 해당 펀딩의 현재 모인 금액 / 해당 펀딩의 최고액 선물 값의 백분율
             List<FundingAchieveDto> fundingAchieveDtos = allFunding.stream()
                     .map(funding -> {
                                 double maxGiftPrice = funding.getGiftList().stream()

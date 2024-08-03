@@ -1,7 +1,9 @@
 package efub.gift_u.domain.participation.service;
 
+import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.participation.dto.JoinRequestDto;
+import efub.gift_u.domain.participation.dto.ModifyRequestDto;
 import efub.gift_u.domain.participation.dto.ParticipationResponseDto;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.global.exception.CustomException;
@@ -10,9 +12,8 @@ import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.participation.dto.JoinResponseDto;
 import efub.gift_u.domain.user.domain.User;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,8 @@ public class ParticipationService {
 
     private final ParticipationRepository participationRepository;
     private final FundingRepository fundingRepository;
+    private final GiftRepository giftRepository;
+
 
 
     /* 특정 펀딩에 대한 기여자 조회 */
@@ -44,7 +47,7 @@ public class ParticipationService {
     }
 
     /* 펀딩 참여 */
-    public JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
+    public synchronized JoinResponseDto joinFunding(User user, Long fundingId, JoinRequestDto requestDto) {
            Funding funding = fundingRepository.findById(fundingId)
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
            // 펀딩 개최자와 참여자가 동일인물인지 확인
@@ -53,6 +56,11 @@ public class ParticipationService {
            }
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
            funding.updateNowMoney(toAddAmount);
+
+           //가격 상한선 추가
+           if(funding.getNowMoney() > giftRepository.findMaxPriceByFundingId(fundingId)){
+               throw new CustomException(ErrorCode.OVER_MAX_LIMIT);
+           }
 
            Participation Participation = JoinRequestDto.toEntity(user ,funding,
                    requestDto.getContributionAmount() , requestDto.getAnonymity(),  requestDto.getMessage());
@@ -73,8 +81,22 @@ public class ParticipationService {
         participationRepository.delete(participation);
     }
 
-//    public ResponseEntity<?> patchPaticipationVisibilityAndMessage(User user, Long fundingId) {
-//
-//
-//    }
+    /*펀딩 참여 익명성 및 메세지 수정*/
+    public ResponseEntity<?> patchParticipationVisibilityAndMessage(User user, Long participationId , ModifyRequestDto modifyRequestDto) {
+         Participation participation = participationRepository.findById(participationId)
+                 .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
+
+         if(!(participation.getUser().getUserId()).equals(user.getUserId())){ // 참여자 id와 요청 사용자 id가 다르다면
+             throw  new CustomException(ErrorCode.INVALID_USER); // 올바르지 않은 접근
+         }
+
+        participation.updateVisibility(modifyRequestDto.getAnonymity());
+         participation.updateMessage(modifyRequestDto.getMessage());
+
+        JoinResponseDto modifyResponseDto = JoinResponseDto.from(participation);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(modifyResponseDto);
+    }
+
 }
