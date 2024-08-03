@@ -42,14 +42,9 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // 프론트엔드의 도메인이 들어가는 파트입니다.
-        // 미리 짝개발자에게 이야기해, 배포된 도메인을 받아 새로 도메인을 allow 해줍니다.
-        // 만약 "https://test.com"라는 도메인을 전달받았다면, 아래 코드에 추가로 다음과 같이 입력합니다.
-        // configuration.setAllowedOrigins(Arrays.asList(..., "https://test.com"));
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", "https://api.giftu.n-e.kr"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); //와일드카드 사용하지 않음
+                "http://localhost:3000", "https://api.giftu.n-e.kr", "https://gift-u.netlify.app"));
+        configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
