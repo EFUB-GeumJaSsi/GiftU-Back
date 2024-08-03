@@ -37,7 +37,7 @@ public class UserController {
     @PatchMapping
     @ResponseStatus(value = HttpStatus.OK)
     public UserUpdateResponseDto updateUser(@AuthUser User user,
-                                            @RequestPart(value = "userUpdateRequestDto") @Valid final UserUpdateRequestDto requestDto,
+                                            @RequestPart(value = "userUpdateRequestDto", required = false) @Valid final UserUpdateRequestDto requestDto,
                                             @RequestPart(value = "userImage", required = false) MultipartFile multipartFile) throws IOException{
         User updatedUser = userService.updateUser(user, requestDto, multipartFile);
         return UserUpdateResponseDto.from(updatedUser);
