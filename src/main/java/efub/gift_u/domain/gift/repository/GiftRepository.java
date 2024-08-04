@@ -11,6 +11,6 @@ import java.util.List;
 public interface GiftRepository extends JpaRepository<Gift, Long> {
 
    List<Gift> findAllByFunding(Funding funding);
-   @Query("select MAX(g.price) from Gift g where g.funding.fundingId =: fundingId")
+   @Query("select MAX(g.price) from Gift g where g.funding.fundingId =:fundingId")
    Long findMaxPriceByFundingId(@Param("fundingId") Long fundingId);
 }
