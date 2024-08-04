@@ -19,13 +19,20 @@ public enum ErrorCode {
     FUNDING_END_DATE_BEFORE_START(HttpStatus.BAD_REQUEST, "펀딩 종료일이 오늘을 우선할 수 없습니다. 펀딩 종료일을 오늘 이후로 설정해주세요."),
     FUNDING_NOT_FOUND(HttpStatus.NOT_FOUND , "해당 펀딩을 찾을 수 없습니다."),
     FUNDING_DELETE_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "펀딩 삭제 권한이 없습니다."),
+    NO_GIFTS_FOUND(HttpStatus.NOT_FOUND, "선물을 찾을 수 없습니다."),
 
     // Participation
     PARTICIPATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 펀딩에 참여자가 존재하지 않습니다."),
+    OVER_MAX_LIMIT(HttpStatus.BAD_REQUEST , "해당 펀딩은 이미 상한 금액에 도달하였습니다."),
+    INVALID_ACCESS(HttpStatus.BAD_REQUEST , "해당 사용자는 이미 펀딩에 참여하였습니디"),
+    INVALID_USER_PARTICIPATION(HttpStatus.FORBIDDEN , "펀딩 개설자와 참여자가 일치합니다."),
 
     // Review
-    INVALID_USER(HttpStatus.FORBIDDEN , "펀딩의 소유자와 일치하지 않습니다."),
-    ALREADY_EXIST(HttpStatus.BAD_REQUEST , "해당 펀딩에 대한 리뷰가 이미 존재합니다.");
+    INVALID_USER(HttpStatus.FORBIDDEN , "저장된 소유자와 일치하지 않습니다."), // Participation에서도 사용
+    ALREADY_EXIST(HttpStatus.BAD_REQUEST , "해당 펀딩에 대한 리뷰가 이미 존재합니다."),
+
+    // User
+    USER_NOT_FOUND_BY_EMAIL(HttpStatus.NOT_FOUND, "해당 email를 가진 User를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -17,6 +17,12 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     @Query("SELECT p.user FROM Participation p JOIN Friend f ON (p.user.userId = f.secondUser.userId OR p.user.userId = f.firstUser.userId) " +
             "WHERE (f.firstUser.userId = :userId OR f.secondUser.userId = :userId) AND f.status = 'ACCEPTED' " +
-            "GROUP BY p.user ORDER BY MAX(p.createdAt) DESC")
+           "AND p.user.userId != :userId " + "GROUP BY p.user ORDER BY MAX(p.createdAt) DESC")
     List<User> findFundingParticipationFriends(@Param("userId") Long userId);
+
+    @Query("SELECT f FROM Friend f JOIN FETCH f.firstUser WHERE f.firstUser = :firstUser AND f.status = :status")
+    List<Friend> findAllByFirstUserAndStatusWithFetch(@Param("firstUser") User firstUser, @Param("status") FriendStatus status);
+
+    @Query("SELECT f FROM Friend f JOIN FETCH f.secondUser WHERE f.secondUser = :secondUser AND f.status = :status")
+    List<Friend> findAllBySecondUserAndStatusWithFetch(@Param("secondUser") User secondUser, @Param("status") FriendStatus status);
 }

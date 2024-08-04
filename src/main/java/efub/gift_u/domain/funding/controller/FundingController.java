@@ -20,6 +20,7 @@ import java.time.LocalDate;
 @RequestMapping("/fundings")
 @RequiredArgsConstructor
 public class FundingController {
+
     private final FundingService fundingService;
 
     //펀딩 생성
@@ -96,6 +97,11 @@ public class FundingController {
         return ResponseEntity.ok("펀딩이 성공적으로 삭제되었습니다.");
     }
 
+    /* 주어진 기간 내 날짜별 마감 펀딩 존재 유무 조회 - 캘린더 */
+    @GetMapping("/calendar/dates/{lookUpStartDate}/{lookUpEndDate}")
+    public AllFundingExistenceResponseDto checkEndedFundingOnDate(@AuthUser User user, @PathVariable("lookUpStartDate") LocalDate startDate, @PathVariable("lookUpEndDate") LocalDate endDate){
+        return fundingService.checkEndedFundingOnDate(user, startDate, endDate);
+    }
 
 
 }

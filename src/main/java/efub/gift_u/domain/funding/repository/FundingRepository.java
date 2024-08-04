@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
+
+
 
     @Query("SELECT f FROM Funding f WHERE f.user.userId = :userId ORDER BY f.createdAt DESC") // 최신순으로 정렬 (=개설일 역순)
     List<Funding> findAllByUserId(@Param("userId") Long userId);
@@ -24,4 +25,6 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
     // 검색
     @Query("SELECT f FROM Funding f where f.user.nickname LIKE %:searchWord% OR f.fundingTitle LIKE %:searchWord% OR f.fundingContent LIKE %:searchWord%")
     List<Funding> fundByUserOrFundingTitleOrFundingContent(@Param("searchWord") String searchWord);
+
+    Funding findByFundingId(Long fundingId);
 }

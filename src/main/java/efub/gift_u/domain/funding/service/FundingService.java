@@ -25,9 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static efub.gift_u.domain.funding.domain.FundingStatus.IN_PROGRESS;
@@ -43,6 +41,17 @@ public class FundingService {
     private final GiftService giftService;
     private final ReviewRepository reviewRepository;
     private final GiftRepository giftRepository;
+
+    //펀딩 이미지 URL 업데이트
+    public void updateFundingImageUrl(Funding funding){
+        Gift mostExpensiveGift = giftRepository.findAllByFunding(funding).stream()
+                .max(Comparator.comparing(Gift::getPrice))
+                .orElseThrow(()-> new CustomException(ErrorCode.NO_GIFTS_FOUND));
+
+        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
+        funding.updateFundingImageUrl(fundingImageUrl);
+        fundingRepository.save(funding);
+    }
 
     //펀딩 개설
     public FundingResponseDto createFunding(User user, FundingRequestDto requestDto, List<MultipartFile> giftImages) {
@@ -61,15 +70,9 @@ public class FundingService {
         savedFunding.getGiftList().addAll(gifts);
         giftService.saveAll(gifts);
 
-        Gift mostExpensiveGift = gifts.get(0);
-        for (Gift gift : gifts) {
-            if (gift.getPrice() > mostExpensiveGift.getPrice()) {
-                mostExpensiveGift = gift;
-            }
-        }
-        String fundingImageUrl = mostExpensiveGift.getGiftImageUrl();
+        updateFundingImageUrl(savedFunding);
 
-        return FundingResponseDto.fromEntity(savedFunding, fundingImageUrl);
+        return FundingResponseDto.fromEntity(savedFunding, savedFunding.getFundingImageUrl());
     }
 
 
@@ -83,6 +86,8 @@ public class FundingService {
         List<GiftResponseDto> giftResponseDtos = giftRepository.findAllByFunding(funding).stream()
                 .map((dtos) -> GiftResponseDto.fromEntity(dtos))
                 .collect(Collectors.toList());
+
+        updateFundingImageUrl(funding);
 
         return  ResponseEntity.status(HttpStatus.OK)
                 .body(FundingResponseDetailDto.from(funding , participationService.getParticipationDetail(funding) , isExistedReview , giftResponseDtos));
@@ -137,9 +142,9 @@ public class FundingService {
 
     /* 해당 마감일 펀딩 목록 조회 - 캘린더 */
     public AllFundingResponseDto getAllFriendsFundingByUserAndDate(User user, LocalDate fundingEndDate) {
-        FriendListResponseDto friendList = friendService.getFriends(user);
+        FriendListResponseDto friendList = friendService.getFriends(user); // 친구 리스트 가져오기
         List<FriendDetailDto> friends = friendList.getFriends();
-        List<Funding> fundings = new ArrayList<>();
+        List<Funding> fundings = new ArrayList<>();  // 친구의 펀딩 중 주어진 마감일과 일치하는 펀딩 찾기
         for (FriendDetailDto friend : friends) {
             fundings.addAll(fundingRepository.findAllByUserAndFundingEndDate(friend.getFriendId(), fundingEndDate));
         }
@@ -173,5 +178,30 @@ public class FundingService {
         giftService.deleteGifts(funding);
         fundingRepository.delete(funding);
     }
+    //펀딩 상태 업데이트
+    public void updateFundingStatus(){
+        List<Funding> fundings = fundingRepository.findAll();
+        for (Funding funding : fundings) {
+            funding.terminateIfExpired();
+            fundingRepository.save(funding);
+        }
+    }
 
+
+    /* 주어진 기간 내 날짜별 마감 펀딩 존재 유무 조회 - 캘린더 */
+    public AllFundingExistenceResponseDto checkEndedFundingOnDate(User user, LocalDate startDate, LocalDate endDate) {
+        LocalDate date = startDate;
+        Map<LocalDate, Boolean> ExistenceOfFundingOnDate= new HashMap<>();  // 날짜와 해당 날짜의 마감펀딩 존재 유무를 map으로 묶어 저장
+
+        while (!date.isAfter(endDate)){  // 각 날짜마다 펀딩 존재 유무 확인
+            if (!getAllFriendsFundingByUserAndDate(user, date).isEmpty()) { // 해당 날짜의 펀딩이 있는 경우
+                ExistenceOfFundingOnDate.put(date, true);
+            }
+            else {  // 해당 날짜의 펀딩이 없는 경우
+                ExistenceOfFundingOnDate.put(date, false);
+            }
+            date = date.plusDays(1);
+        }
+        return new AllFundingExistenceResponseDto(ExistenceOfFundingOnDate);
+    }
 }

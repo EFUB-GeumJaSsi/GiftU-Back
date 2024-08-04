@@ -7,6 +7,7 @@ import efub.gift_u.domain.participation.domain.Participation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +24,11 @@ public interface ParticipationRepository extends  JpaRepository<Participation, L
 
     @Query("SELECT p FROM Participation p WHERE p.participationId = :participationId AND p.user.userId = :userId")
     Optional<Participation> findByParticipationIdAndUserId(@Param("participationId") Long participationId, @Param("userId") Long userId);
+
+    @Query("SELECT p FROM Participation p WHERE  p.user.userId = :userId AND p.funding.fundingId =:fundingId")
+    List<Participation> findParticipationByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
+
+    @Query("SELECT p FROM Participation p WHERE p.user.userId =:userId AND p.funding.fundingId =:fundingId")
+    Optional<Participation> findByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
+
 }

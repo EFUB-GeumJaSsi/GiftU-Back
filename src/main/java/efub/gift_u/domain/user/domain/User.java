@@ -46,7 +46,7 @@ public class User {
     private List<Friend> friendsAsSecondUser = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "participationId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Participation> participationList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
