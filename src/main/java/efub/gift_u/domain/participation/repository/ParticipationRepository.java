@@ -25,8 +25,8 @@ public interface ParticipationRepository extends  JpaRepository<Participation, L
     @Query("SELECT p FROM Participation p WHERE p.participationId = :participationId AND p.user.userId = :userId")
     Optional<Participation> findByParticipationIdAndUserId(@Param("participationId") Long participationId, @Param("userId") Long userId);
 
-    @Query("SELECT p FROM Participation p WHERE  p.user.userId = :userId")
-    Optional<Participation> findParticipationByUserId(@Param("userId") Long userId);
+    @Query("SELECT p FROM Participation p WHERE  p.user.userId = :userId AND p.funding.fundingId =:fundingId")
+    List<Participation> findParticipationByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
 
     @Query("SELECT p FROM Participation p WHERE p.user.userId =:userId AND p.funding.fundingId =:fundingId")
     Optional<Participation> findByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
