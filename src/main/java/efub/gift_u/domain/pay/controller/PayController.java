@@ -30,10 +30,10 @@ public class PayController {
     private final PayService payService;
     private final RefundService refundService;
 
-    @Value("{portone.api.key}")
+    @Value("${portone.api.key}")
     private String apiKey;
 
-    @Value("{portone.api.secretKey}")
+    @Value("${portone.api.secretKey}")
     private String secretKey;
     private IamportClient iamportClient;
 
