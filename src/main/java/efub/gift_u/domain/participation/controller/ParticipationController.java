@@ -19,6 +19,8 @@ public class ParticipationController {
 
     private final ParticipationService participationService;
 
+
+
     /* 펀딩 참여 */
     @PostMapping("/{fundingId}")
     public ResponseEntity<JoinResponseDto> joinFunding(@AuthUser User user , @PathVariable("fundingId") Long fundingId , @RequestBody JoinRequestDto joinRequestDto){
