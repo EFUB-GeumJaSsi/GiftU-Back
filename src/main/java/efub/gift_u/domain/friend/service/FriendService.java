@@ -55,10 +55,6 @@ public class FriendService {
         Friend friendRequest = friendRepository.findById(friendTableId)
                 .orElseThrow(() -> new EntityNotFoundException("친구 요청을 찾을 수 없습니다."));
 
-        if (friendRequest.getStatus() == FriendStatus.ACCEPTED) {
-            throw new IllegalStateException("이미 수락된 요청입니다.");
-        }
-
         if (friendRequest.getStatus() == FriendStatus.REJECTED) {
             throw new IllegalStateException("이미 거절된 요청입니다.");
         }
@@ -78,10 +74,6 @@ public class FriendService {
     public FriendResponseDto rejectFriend(User currentUser, Long friendTableId) {
         Friend friendRequest = friendRepository.findById(friendTableId)
                 .orElseThrow(() -> new EntityNotFoundException("친구 요청을 찾을 수 없습니다."));
-
-        if (friendRequest.getStatus() == FriendStatus.REJECTED) {
-            throw new IllegalStateException("이미 거절된 요청입니다.");
-        }
 
         if (friendRequest.getStatus() == FriendStatus.ACCEPTED) {
             throw new IllegalStateException("이미 수락된 요청입니다.");
