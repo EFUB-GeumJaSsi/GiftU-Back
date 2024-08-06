@@ -7,6 +7,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+    // Friend
+    SELF_FRIEND_REQUEST_NOT_ALLOWED(HttpStatus.FORBIDDEN, "자기 자신에게 친구 요청을 보낼 수 없습니다."),
+    FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 요청을 찾을 수 없습니다."),
+    ACCEPT_AFTER_REJECT(HttpStatus.BAD_REQUEST, "이미 거절된 요청입니다."),
+    REJECT_AFTER_ACCEPT(HttpStatus.BAD_REQUEST, "이미 수락된 요청입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
+    NOT_FRIEND(HttpStatus.BAD_REQUEST, "현재 친구가 아닙니다. 친구를 삭제할 수 없습니다."),
+
     // Auth
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 유효하지 않습니다."),
     FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "로그인 후 이용 가능합니다."), // 로그인X 유저의 요청 OR 토큰 불일치
