@@ -49,7 +49,9 @@ public class PayController {
         // 결제 번호
         // String payNumber  = payService.generateMerchantUid(user);
         String payNumber = imp_uid;
+        log.info("paymentByImpUid 진입 : {}" , imp_uid);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
+
         log.info("결제 요청 응답. 결제 번호 :{}" ,iamportResponse.getResponse().getMerchantUid());
         try {
             PayResponseDto payResponseDto = payService.createPayment(user, payNumber ,payRequestDto , iamportResponse);
@@ -62,7 +64,7 @@ public class PayController {
             String token = refundService.getToken(apiKey , secretKey);
             refundService.refundRequest(token , payNumber , e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+                    .body("결제 금액 불일치로 인한 결제 취소");
         }
     }
 

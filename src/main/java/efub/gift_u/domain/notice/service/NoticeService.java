@@ -97,7 +97,7 @@ public class NoticeService {
                                 double percent = maxGiftPrice>0? (funding.getNowMoney()/maxGiftPrice)*100 : 0.0;
                         // 해당 펀딩의 마지막 참여자가 참여한 시간
                         Optional<LocalDateTime> lastParticipateTime = participationRepository.findCreatedAtByUserIdAndFundingId(user.getUserId(),funding.getFundingId());
-                        System.out.println(lastParticipateTime);
+                        System.out.println("가장 마지막 참여자 : " + lastParticipateTime);
                         LocalDateTime lastParticipateTimeFinal = lastParticipateTime.orElse(null);
                           return FundingAchieveDto.from(funding , percent ,lastParticipateTimeFinal);
                             })
