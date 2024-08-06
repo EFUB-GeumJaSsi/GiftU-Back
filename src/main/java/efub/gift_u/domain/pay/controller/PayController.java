@@ -9,6 +9,7 @@ import efub.gift_u.domain.pay.dto.Response.PayResponseDto;
 import efub.gift_u.domain.pay.service.PayService;
 import efub.gift_u.domain.pay.service.RefundService;
 import efub.gift_u.domain.user.domain.User;
+import efub.gift_u.global.exception.CustomException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class PayController {
         // 결제 번호
         // String payNumber  = payService.generateMerchantUid(user);
         String payNumber = imp_uid;
-        log.info("paymentByImpUid 진입 : {}" , imp_uid);
+        log.info("paymentByImpUid 진입 : {}" , payNumber);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
 
         log.info("결제 요청 응답. 결제 번호 :{}" ,iamportResponse.getResponse().getMerchantUid());
@@ -59,12 +60,12 @@ public class PayController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(payResponseDto);
         }
-        catch (RuntimeException e){
+        catch (CustomException e){
             log.info("펀딩 참여 결제 취소 : 펀딩 참여 결제 번호 {}" ,  payNumber);
             String token = refundService.getToken(apiKey , secretKey);
             refundService.refundRequest(token , payNumber , e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("결제 금액 불일치로 인한 결제 취소");
+                    .body(e.getMessage());
         }
     }
 
