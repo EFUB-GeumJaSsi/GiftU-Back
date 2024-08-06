@@ -1,6 +1,5 @@
 package efub.gift_u.global.config;
 
-//import efub.gift_u.domain.oauth.errorHandler.CustomAccessDeniedHandler;
 import efub.gift_u.domain.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
 import efub.gift_u.domain.oauth.jwt.JwtAuthenticationFilter;
 
@@ -26,7 +25,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomJwtAuthenticationEntryPoint customJwtAuthenticationEntryPoint;
-//    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     // 인증이 필요없는 URL 패턴 목록을 정의
     private static final String[] AUTH_WHITELIST = {
@@ -67,7 +65,6 @@ public class SecurityConfig {
                 .exceptionHandling(exception ->
                 {
                     exception.authenticationEntryPoint(customJwtAuthenticationEntryPoint); // 인증 실패 시
-//                    exception.accessDeniedHandler(customAccessDeniedHandler); // 접근 거부 시
                 });
 
         http.authorizeHttpRequests(auth -> {
