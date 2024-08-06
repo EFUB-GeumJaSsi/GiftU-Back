@@ -33,6 +33,12 @@ public class FriendService {
         User firstUser = currentUser.getUserId() < friend.getUserId() ? currentUser : friend;
         User secondUser = currentUser.getUserId() > friend.getUserId() ? currentUser : friend;
 
+        // 친구 요청 중복 확인
+        List<FriendStatus> pendingStatuses = List.of(FriendStatus.PENDING_FIRST_SECOND, FriendStatus.PENDING_SECOND_FIRST, FriendStatus.ACCEPTED);
+        if (friendRepository.findByFirstUserAndSecondUserAndStatusIn(firstUser, secondUser, pendingStatuses).isPresent()) {
+            throw new CustomException(ErrorCode.DUPLICATE_FRIEND_REQUEST);
+        }
+
         FriendStatus status = (firstUser.equals(currentUser)) ? FriendStatus.PENDING_FIRST_SECOND : FriendStatus.PENDING_SECOND_FIRST;
 
         Friend friendRequest = Friend.builder()
