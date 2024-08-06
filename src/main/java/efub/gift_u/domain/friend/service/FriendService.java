@@ -1,6 +1,5 @@
 package efub.gift_u.domain.friend.service;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import efub.gift_u.domain.friend.domain.Friend;
 import efub.gift_u.domain.friend.domain.FriendStatus;
 import efub.gift_u.domain.friend.dto.*;
@@ -8,7 +7,8 @@ import efub.gift_u.domain.friend.repository.FriendRepository;
 import efub.gift_u.domain.user.domain.User;
 import efub.gift_u.domain.user.service.UserService;
 import efub.gift_u.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import efub.gift_u.global.exception.CustomException;
+import efub.gift_u.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,19 +26,14 @@ public class FriendService {
 
     public FriendResponseDto requestFriend(User currentUser, FriendRequestDto requestDto) {
         User friend = userService.findUserByEmail(requestDto.getEmail());
-
         if (currentUser.getUserId().equals(friend.getUserId())) {
-            throw new IllegalArgumentException("자기 자신에게 친구 요청을 보낼 수 없습니다.");
+            throw new CustomException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
         }
 
         User firstUser = currentUser.getUserId() < friend.getUserId() ? currentUser : friend;
         User secondUser = currentUser.getUserId() > friend.getUserId() ? currentUser : friend;
 
         FriendStatus status = (firstUser.equals(currentUser)) ? FriendStatus.PENDING_FIRST_SECOND : FriendStatus.PENDING_SECOND_FIRST;
-
-        if (friendRepository.findByFirstUserAndSecondUser(firstUser, secondUser).isPresent()) {
-            throw new DuplicateRequestException("친구 요청이 이미 존재하여 친구 요청을 보낼 수 없습니다.");
-        }
 
         Friend friendRequest = Friend.builder()
                 .firstUser(firstUser)
@@ -53,17 +48,17 @@ public class FriendService {
 
     public FriendResponseDto acceptFriend(User currentUser, Long friendTableId) {
         Friend friendRequest = friendRepository.findById(friendTableId)
-                .orElseThrow(() -> new EntityNotFoundException("친구 요청을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
 
         if (friendRequest.getStatus() == FriendStatus.REJECTED) {
-            throw new IllegalStateException("이미 거절된 요청입니다.");
+            throw new CustomException(ErrorCode.ACCEPT_AFTER_REJECT);
         }
 
         if ((friendRequest.getStatus() == FriendStatus.PENDING_FIRST_SECOND && friendRequest.getSecondUser().equals(currentUser)) ||
                 (friendRequest.getStatus() == FriendStatus.PENDING_SECOND_FIRST && friendRequest.getFirstUser().equals(currentUser))) {
             friendRequest.accept();
         } else {
-            throw new IllegalStateException("권한이 없습니다.");
+            throw new CustomException(ErrorCode.FAIL_AUTHORIZATION);
         }
 
         Friend savedFriend = friendRepository.save(friendRequest);
@@ -73,17 +68,17 @@ public class FriendService {
 
     public FriendResponseDto rejectFriend(User currentUser, Long friendTableId) {
         Friend friendRequest = friendRepository.findById(friendTableId)
-                .orElseThrow(() -> new EntityNotFoundException("친구 요청을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
 
         if (friendRequest.getStatus() == FriendStatus.ACCEPTED) {
-            throw new IllegalStateException("이미 수락된 요청입니다.");
+            throw new CustomException(ErrorCode.REJECT_AFTER_ACCEPT);
         }
 
         if ((friendRequest.getStatus() == FriendStatus.PENDING_FIRST_SECOND && friendRequest.getSecondUser().equals(currentUser)) ||
                 (friendRequest.getStatus() == FriendStatus.PENDING_SECOND_FIRST && friendRequest.getFirstUser().equals(currentUser))) {
             friendRequest.reject();
         } else {
-            throw new IllegalStateException("권한이 없습니다.");
+            throw new CustomException(ErrorCode.FAIL_AUTHORIZATION);
         }
 
         Friend savedFriend = friendRepository.save(friendRequest);
@@ -117,16 +112,16 @@ public class FriendService {
 
     public String deleteFriend(User currentUser, Long friendId) {
         User friend = userRepository.findById(friendId)
-                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         User firstUser = currentUser.getUserId() < friend.getUserId() ? currentUser : friend;
         User secondUser = currentUser.getUserId() > friend.getUserId() ? currentUser : friend;
 
         Friend friendRequest = friendRepository.findByFirstUserAndSecondUser(firstUser, secondUser)
-                .orElseThrow(() -> new EntityNotFoundException("친구 요청을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
 
         if (friendRequest.getStatus() != FriendStatus.ACCEPTED) {
-            throw new IllegalStateException("현재 친구가 아닙니다. 친구를 삭제할 수 없습니다.");
+            throw new CustomException(ErrorCode.NOT_FRIEND);
         }
 
         friendRepository.delete(friendRequest);
