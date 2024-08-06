@@ -49,7 +49,7 @@ public class PayController {
         // 결제 번호
         // String payNumber  = payService.generateMerchantUid(user);
         String payNumber = imp_uid;
-        IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(imp_uid);
+        IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
         log.info("결제 요청 응답. 결제 번호 :{}" ,iamportResponse.getResponse().getMerchantUid());
         try {
             PayResponseDto payResponseDto = payService.createPayment(user, payNumber ,payRequestDto , iamportResponse);
