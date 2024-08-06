@@ -10,6 +10,7 @@ public enum ErrorCode {
     // Friend
     SELF_FRIEND_REQUEST_NOT_ALLOWED(HttpStatus.FORBIDDEN, "자기 자신에게 친구 요청을 보낼 수 없습니다."),
     FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 요청을 찾을 수 없습니다."),
+    DUPLICATE_FRIEND_REQUEST(HttpStatus.BAD_REQUEST, "이미 친구 요청을 보냈습니다."),
     ACCEPT_AFTER_REJECT(HttpStatus.BAD_REQUEST, "이미 거절된 요청입니다."),
     REJECT_AFTER_ACCEPT(HttpStatus.BAD_REQUEST, "이미 수락된 요청입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
