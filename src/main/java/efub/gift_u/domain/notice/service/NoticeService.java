@@ -7,6 +7,7 @@ import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.gift.domain.Gift;
 import efub.gift_u.domain.notice.dto.*;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
+import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static efub.gift_u.domain.friend.domain.FriendStatus.PENDING_FIRST_SECOND;
@@ -88,14 +90,16 @@ public class NoticeService {
             // 해당 펀딩의 현재 모인 금액 / 해당 펀딩의 최고액 선물 값의 백분율
             List<FundingAchieveDto> fundingAchieveDtos = allFunding.stream()
                     .map(funding -> {
-                                double maxGiftPrice = funding.getGiftList().stream()
+                        double maxGiftPrice = funding.getGiftList().stream()
                                         .mapToDouble(Gift::getPrice)
                                         .max()
                                         .orElse(0.0);
                                 double percent = maxGiftPrice>0? (funding.getNowMoney()/maxGiftPrice)*100 : 0.0;
-                                // 해당 펀딩의 마지막 참여자가 참여한 시간
-                        LocalDateTime lastParticipateTime = participationRepository.findCreatedAtByUserIdAndFundingId(user.getUserId(), funding.getFundingId()).get(0).getCreatedAt();
-                                return FundingAchieveDto.from(funding , percent , lastParticipateTime);
+                        // 해당 펀딩의 마지막 참여자가 참여한 시간
+                        Optional<LocalDateTime> lastParticipateTime = participationRepository.findCreatedAtByUserIdAndFundingId(user.getUserId(),funding.getFundingId());
+                        System.out.println(lastParticipateTime);
+                        LocalDateTime lastParticipateTimeFinal = lastParticipateTime.orElse(null);
+                          return FundingAchieveDto.from(funding , percent ,lastParticipateTimeFinal);
                             })
                     .collect(Collectors.toList());
 
