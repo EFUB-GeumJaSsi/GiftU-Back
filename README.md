@@ -38,7 +38,7 @@
 <br>
 
 ## 🔧 시스템 구조
-![image](https://github.com/user-attachments/assets/bc59ae4b-a8b0-4858-a1be-bbb2400f6c31)
+![image](https://github.com/user-attachments/assets/00d87136-50c9-4ee9-b78b-64d6ec64dd6e)
 <br>
 
 ## 📌 주요 기능 
