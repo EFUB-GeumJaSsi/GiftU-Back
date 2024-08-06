@@ -1,5 +1,6 @@
 package efub.gift_u.domain.oauth.jwt;
 
+import efub.gift_u.domain.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,25 +15,32 @@ import java.io.IOException;
 
 /*
     흐름
-    HttpServletRequest 에서 Token을 획득
-    JwtTokenProvider 을 통해 토큰 검증
+    HttpServletRequest에서 accessToken 획득
+    jwt 서비스 단의 validateToken 메소드를 통해 토큰 검증
     검증에 성공한 경우, JWT로 부터 추출한 memberId으로 UserAuthentication 객체 생성
     생성한 Authentication을 SecurityContext에 저장
     나머지 FilterChain들을 수행할 수 있도록 doFilter(request,response)를 호출
+    검증 실패한 경우, 에러 핸들림
  */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final CustomJwtAuthenticationEntryPoint customJwtAuthenticationEntryPoint;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 헤더에서 JWT 받아옴
+
+        // 1. 헤더에서 JWT 받아옴
         String accessToken = jwtService.getTokenFromRequest(request);
 
-        // 유효성 검사 (유효한 토큰인지 확인)
-        if (accessToken != null && jwtService.validateToken(accessToken)) {
+        // 2. 토큰 유효성 검사
+        String validation = jwtService.validateToken(accessToken);
+
+        // 3-1. 토큰이 유효한 경우
+        if (accessToken != null && validation.equals("IS_VALID")) {
+
             String userId = jwtService.extractSubject(accessToken);
             // userId로 authentication 객체 생성 -> principal에 유저 정보 담음
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, null);
@@ -40,10 +48,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 생성한 authentication을 SecurityContext에 저장
             // token이 인증된 상태를 유지하도록 context(맥락)을 유지
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 다음 필터로 요청 전달 호출
+            // UsernamePasswordAuthenticationFilter 로 이동
+            filterChain.doFilter(request, response);
+
         }
-        // 다음 필터로 요청 전달 호출
-        // UsernamePasswordAuthenticationFilter 로 이동
-        filterChain.doFilter(request, response);
+        else if (validation.equals("TOKEN_EXPIRED"))  // 만료
+            customJwtAuthenticationEntryPoint.commence(request, response, "TOKEN_EXPIRED");
+        else if (validation.equals("INVALID_TOKEN"))  // 유효하지 않음
+            customJwtAuthenticationEntryPoint.commence(request, response, "INVALID_TOKEN");
+        else {  // 인증 실패
+            customJwtAuthenticationEntryPoint.commence(request, response, "FAIL_AUTHENTICATION");
+        }
+
     }
 
 }
