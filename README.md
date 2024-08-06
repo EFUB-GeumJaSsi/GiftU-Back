@@ -1,18 +1,18 @@
-# GiftU-Back
-[EFUB 4기 sws 프로젝트] GiftU의 백엔드 레포지토리입니다.
+# 🎁 GiftU-Back 🎁
+### [EFUB 4기 sws 프로젝트] GiftU의 백엔드 레포지토리입니다.
 ![리드미 대표사진](https://github.com/user-attachments/assets/e23d2a0f-46c7-4c02-80a7-bfd12cf502fb)
-<br>
+<br><br>
 
-## 🎁 서비스 설명
-받고 싶은 선물을 직접 말하기 어려웠던 사람들과 매년 생일 선물 고민이 있었던 사람들을 위한 서비스입니다.
-고가의 선물이나 꼭 필요한 선물을 여러 친구들과 함께 펀딩하여 받을 수 있습니다.
-금액대별로 선물을 등록하여 펀딩을 개설하면 친구들이 펀딩에 참여합니다.
-펀딩에 성공하는 경우, 모인 금액에 맞는 선물이 배송됩니다.
+## 🎀 서비스 설명
+받고 싶은 선물을 직접 말하기 어려웠던 사람들과 매년 생일 선물 고민이 있었던 사람들을 위한 서비스입니다.<br>
+고가의 선물이나 꼭 필요한 선물을 여러 친구들과 함께 펀딩하여 받을 수 있습니다. <br>
+금액대별로 선물을 등록하여 펀딩을 개설하면 친구들이 펀딩에 참여합니다. <br>
+펀딩에 성공하는 경우, 모인 금액에 맞는 선물이 배송됩니다. <br>
 <br>
 
 ## 🗓️ 개발 기간
-- 2024.06.29 ~ 2024.08.10
-<br>
+2024.06.29 ~ 2024.08.10
+<br><br>
 
 ## ⚙️ 기술 스택
 <div>
@@ -38,11 +38,12 @@
 <br>
 
 ## 🔧 시스템 구조
+![image](https://github.com/user-attachments/assets/00d87136-50c9-4ee9-b78b-64d6ec64dd6e)
 <br>
 
 ## 📌 주요 기능 
 - 카카오 소셜 로그인/회원가입 기능
-- jwt 토큰(access, refresh token)을 이용한 사용자 인증
+- jwt 토큰(accessToken, refreshToken)을 이용한 사용자 인증
 - 회원 조회, 정보 수정, 탈퇴 기능
 - 펀딩 개설 및 조회
 - 펀딩 검색 기능
@@ -62,12 +63,16 @@
 
 ## 📜 ERD
 ![erd](https://github.com/user-attachments/assets/12eab85e-c946-4c9a-b24d-1006b15e20ef)
-<br>
+<br><br>
 
 ## ✏️ API 명세서   
-![image](https://github.com/user-attachments/assets/ebd239db-e7dc-41c5-b4be-63b99dde1b22)
-![image](https://github.com/user-attachments/assets/28eb1008-7c79-4dd6-b0d9-926ead406d6c)
-![image](https://github.com/user-attachments/assets/a474ccfa-dcd0-4b37-b58f-6230e2c82950)
-![image](https://github.com/user-attachments/assets/34cb19f1-a10f-4203-9465-2f8c287a33bf)
+### user, friend, funding, oauth(login), calendar, review, notice, search, pay
+<br>
+
+![image](https://github.com/user-attachments/assets/43cc0b36-f809-4cd8-9c90-0ea8070462f8)
+![image](https://github.com/user-attachments/assets/6ecefe92-7be0-4f58-9cbf-31cc6e5eed62)
+![image](https://github.com/user-attachments/assets/25b828d0-0b7d-4c7a-97fe-1e56ef64657e)
+![image](https://github.com/user-attachments/assets/2f341025-8772-48ed-ae1f-53841789f175)
+
 
 

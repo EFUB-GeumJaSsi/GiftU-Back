@@ -140,19 +140,43 @@ public class FundingService {
     }
 
 
-    /* 해당 마감일 펀딩 목록 조회 - 캘린더 */
-    public AllFundingResponseDto getAllFriendsFundingByUserAndDate(User user, LocalDate fundingEndDate) {
+    /* 해당 마감일의 진행중인 펀딩 목록 조회 - 캘린더 */
+    public AllFundingResponseDto getAllInProgressFriendsFundingByUserAndDate(User user, LocalDate fundingEndDate) {
+        return getAllFriendsFundingByUserAndDateAndStatus(user, fundingEndDate, IN_PROGRESS);
+    }
+
+
+    /* 주어진 기간 내 날짜별 마감 펀딩 존재 유무 조회 - 캘린더 */
+    public AllFundingExistenceResponseDto checkEndedFundingOnDate(User user, LocalDate startDate, LocalDate endDate) {
+        LocalDate date = startDate;
+        Map<LocalDate, Boolean> ExistenceOfFundingOnDate= new HashMap<>();  // 날짜와 해당 날짜의 마감펀딩 존재 유무를 map으로 묶어 저장
+
+        while (!date.isAfter(endDate)){  // 각 날짜마다 펀딩 존재 유무 확인
+            if (!getAllFriendsFundingByUserAndDateAndStatus(user, date, null).isEmpty()) { // 해당 날짜의 펀딩이 있는 경우 (null : 상태 구분X)
+                ExistenceOfFundingOnDate.put(date, true);
+            }
+            else {  // 해당 날짜의 펀딩이 없는 경우
+                ExistenceOfFundingOnDate.put(date, false);
+            }
+            date = date.plusDays(1);
+        }
+        return new AllFundingExistenceResponseDto(ExistenceOfFundingOnDate);
+    }
+
+    // 친구의 펀딩 중 주어진 마감일과 상태가 일치하는 펀딩 가져오기
+    public AllFundingResponseDto getAllFriendsFundingByUserAndDateAndStatus(User user, LocalDate fundingEndDate, FundingStatus status) {
         FriendListResponseDto friendList = friendService.getFriends(user); // 친구 리스트 가져오기
         List<FriendDetailDto> friends = friendList.getFriends();
-        List<Funding> fundings = new ArrayList<>();  // 친구의 펀딩 중 주어진 마감일과 일치하는 펀딩 찾기
+        List<Funding> fundings = new ArrayList<>();
         for (FriendDetailDto friend : friends) {
-            fundings.addAll(fundingRepository.findAllByUserAndFundingEndDate(friend.getFriendId(), fundingEndDate));
+            // 친구의 펀딩중 주어진 마감일과 상태가 일치하는 펀딩 찾기
+            fundings.addAll(fundingRepository.findAllByUserAndFundingEndDateAndStatus(friend.getFriendId(), fundingEndDate, status));
         }
         List<IndividualFundingResponseDto> dtoList = convertToDtoList(fundings);
         return new AllFundingResponseDto(dtoList);
     }
 
-
+    // list를 dto로 변환
     private List<IndividualFundingResponseDto> convertToDtoList(List<Funding> fundings){
         return fundings.stream()
                 .map(IndividualFundingResponseDto::from)
@@ -187,21 +211,4 @@ public class FundingService {
         }
     }
 
-
-    /* 주어진 기간 내 날짜별 마감 펀딩 존재 유무 조회 - 캘린더 */
-    public AllFundingExistenceResponseDto checkEndedFundingOnDate(User user, LocalDate startDate, LocalDate endDate) {
-        LocalDate date = startDate;
-        Map<LocalDate, Boolean> ExistenceOfFundingOnDate= new HashMap<>();  // 날짜와 해당 날짜의 마감펀딩 존재 유무를 map으로 묶어 저장
-
-        while (!date.isAfter(endDate)){  // 각 날짜마다 펀딩 존재 유무 확인
-            if (!getAllFriendsFundingByUserAndDate(user, date).isEmpty()) { // 해당 날짜의 펀딩이 있는 경우
-                ExistenceOfFundingOnDate.put(date, true);
-            }
-            else {  // 해당 날짜의 펀딩이 없는 경우
-                ExistenceOfFundingOnDate.put(date, false);
-            }
-            date = date.plusDays(1);
-        }
-        return new AllFundingExistenceResponseDto(ExistenceOfFundingOnDate);
-    }
 }
