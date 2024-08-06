@@ -14,7 +14,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     Optional<Friend> findByFirstUserAndSecondUser(User firstUser, User secondUser);
     List<Friend> findAllByFirstUserAndStatus(User firstUser, FriendStatus status);
     List<Friend> findAllBySecondUserAndStatus(User secondUser, FriendStatus status);
-    Optional<Friend> findByFirstUserAndSecondUserAndStatusIn(User firstUser, User secondUser, List<FriendStatus> statuses);
+    List<Friend> findByFirstUserAndSecondUserAndStatusIn(User firstUser, User secondUser, List<FriendStatus> statuses);
 
     @Query("SELECT p.user FROM Participation p JOIN Friend f ON (p.user.userId = f.secondUser.userId OR p.user.userId = f.firstUser.userId) " +
             "WHERE (f.firstUser.userId = :userId OR f.secondUser.userId = :userId) AND f.status = 'ACCEPTED' " +
