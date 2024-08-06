@@ -35,7 +35,7 @@ public class FriendService {
 
         // 친구 요청 중복 확인
         List<FriendStatus> pendingStatuses = List.of(FriendStatus.PENDING_FIRST_SECOND, FriendStatus.PENDING_SECOND_FIRST, FriendStatus.ACCEPTED);
-        if (friendRepository.findByFirstUserAndSecondUserAndStatusIn(firstUser, secondUser, pendingStatuses).isPresent()) {
+        if (!friendRepository.findByFirstUserAndSecondUserAndStatusIn(firstUser, secondUser, pendingStatuses).isEmpty()) {
             throw new CustomException(ErrorCode.DUPLICATE_FRIEND_REQUEST);
         }
 
