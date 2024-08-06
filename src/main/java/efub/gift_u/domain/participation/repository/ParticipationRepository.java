@@ -31,7 +31,11 @@ public interface ParticipationRepository extends  JpaRepository<Participation, L
     @Query("SELECT p FROM Participation p WHERE p.user.userId =:userId AND p.funding.fundingId =:fundingId")
     Optional<Participation> findByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
 
+    @Query("select p.createdAt FROM Participation p where p.user.userId =:userId and p.funding.fundingId =:fundingId ORDER BY  p.createdAt DESC")
+    Optional<LocalDateTime> findCreatedAtByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
+
     @Query("select p FROM Participation p where p.user.userId =:userId and p.funding.fundingId =:fundingId ORDER BY  p.createdAt DESC")
-    List<Participation> findCreatedAtByUserIdAndFundingId(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
+    List<Participation> findCreatedAtByUserIdAndFundingId1(@Param("userId") Long userId , @Param("fundingId") Long fundingId);
+
 
 }
