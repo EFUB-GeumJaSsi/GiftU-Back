@@ -66,7 +66,7 @@
 <br><br>
 
 ## ✏️ API 명세서   
-### user, friend, funding, oauth(login), calender, review, notice, search, pay
+### user, friend, funding, oauth(login), calendar, review, notice, search, pay
 <br>
 
 ![image](https://github.com/user-attachments/assets/43cc0b36-f809-4cd8-9c90-0ea8070462f8)
