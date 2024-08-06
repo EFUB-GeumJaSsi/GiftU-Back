@@ -13,16 +13,17 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FriendNoticeDto {
+     private String tag;
+     private Long friendTableId;
+     private Long firstUserId;
+     private Long secondUserId;
+     private String recieveUserNickname;
+     private String recieveUserImgUrl;
+     private FriendStatus status;
+     private LocalDateTime updatedAt;
 
-    private Long friendTableId;
-    private Long firstUserId;
-    private Long secondUserId;
-    private String recieveUserNickname;
-    private String recieveUserImgUrl;
-    private FriendStatus status;
-    private LocalDateTime updatedAt;
-
-    public FriendNoticeDto(Long friendTableId , Long firstUserId , Long secondUserId ,String recieveUserNickname , String recieveUserImgUrl ,FriendStatus status , LocalDateTime updatedAt){
+    public FriendNoticeDto(String tag ,Long friendTableId , Long firstUserId , Long secondUserId ,String recieveUserNickname , String recieveUserImgUrl ,FriendStatus status , LocalDateTime updatedAt){
+        this.tag = tag;
         this.friendTableId = friendTableId;
         this.firstUserId = firstUserId;
         this.secondUserId = secondUserId;
@@ -34,6 +35,7 @@ public class FriendNoticeDto {
 
     public static FriendNoticeDto firstFrom(Friend friend) {
         return new FriendNoticeDto(
+                "friend ",
                friend.getFriendTableId(),
                 friend.getFirstUser().getUserId(),
                 friend.getSecondUser().getUserId(),
@@ -46,6 +48,7 @@ public class FriendNoticeDto {
 
     public static FriendNoticeDto secondFrom(Friend friend) {
         return new FriendNoticeDto(
+                "friend ",
                 friend.getFriendTableId(),
                 friend.getFirstUser().getUserId(),
                 friend.getSecondUser().getUserId(),
