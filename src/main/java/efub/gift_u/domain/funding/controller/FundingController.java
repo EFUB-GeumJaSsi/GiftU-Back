@@ -72,10 +72,10 @@ public class FundingController {
     }
 
 
-    /* 마감일 펀딩 목록 조회 - 캘린더 */
+    /* 해당 마감일 진행중인 펀딩 목록 조회 - 캘린더 */
     @GetMapping("/calendar/{fundingEndDate}")
     public AllFundingResponseDto getFriendsFundingByUser(@AuthUser User user, @PathVariable("fundingEndDate")LocalDate fundingEndDate) {
-        return fundingService.getAllFriendsFundingByUserAndDate(user, fundingEndDate);
+        return fundingService.getAllInProgressFriendsFundingByUserAndDate(user, fundingEndDate);
     }
 
 
