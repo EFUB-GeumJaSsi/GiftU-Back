@@ -7,6 +7,7 @@ import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.gift.domain.Gift;
 import efub.gift_u.domain.notice.dto.*;
 import efub.gift_u.domain.oauth.customAnnotation.AuthUser;
+import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class NoticeService {
 
     private final FriendRepository friendRepository;
     private final FundingRepository fundingRepository;
+    private final ParticipationRepository participationRepository;
 
     LocalDate today = LocalDate.now(); //오늘 날짜
     LocalDateTime now = LocalDateTime.now();
@@ -91,7 +93,9 @@ public class NoticeService {
                                         .max()
                                         .orElse(0.0);
                                 double percent = maxGiftPrice>0? (funding.getNowMoney()/maxGiftPrice)*100 : 0.0;
-                                return FundingAchieveDto.from(funding , percent);
+                                // 해당 펀딩의 마지막 참여자가 참여한 시간
+                        LocalDateTime lastParticipateTime = participationRepository.findCreatedAtByUserIdAndFundingId(user.getUserId(), funding.getFundingId()).get(0).getCreatedAt();
+                                return FundingAchieveDto.from(funding , percent , lastParticipateTime);
                             })
                     .collect(Collectors.toList());
 

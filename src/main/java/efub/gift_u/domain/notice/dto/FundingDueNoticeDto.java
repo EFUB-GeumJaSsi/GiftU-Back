@@ -33,7 +33,7 @@ public class FundingDueNoticeDto {
                 funding.getFundingId(),
                 funding.getUser().getUserId(),
                 funding.getFundingTitle(),
-                funding.getFundingImageUrl(), 
+                funding.getFundingImageUrl(),
                 funding.getFundingEndDate(),
                 funding.getStatus()
         );
