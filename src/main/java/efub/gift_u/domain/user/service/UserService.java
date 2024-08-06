@@ -7,6 +7,8 @@ import efub.gift_u.domain.user.repository.UserRepository;
 import efub.gift_u.global.S3Image.service.S3ImageService;
 import efub.gift_u.domain.user.domain.User;
 import efub.gift_u.domain.user.dto.UserUpdateRequestDto;
+import efub.gift_u.global.exception.CustomException;
+import efub.gift_u.global.exception.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ public class UserService {
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("해당 email를 가진 User를 찾을 수 없습니다. email="+email));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND_BY_EMAIL));
     }
 
 

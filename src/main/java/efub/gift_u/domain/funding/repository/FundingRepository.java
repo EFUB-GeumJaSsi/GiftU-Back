@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
 
@@ -27,4 +25,6 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
     // 검색
     @Query("SELECT f FROM Funding f where f.user.nickname LIKE %:searchWord% OR f.fundingTitle LIKE %:searchWord% OR f.fundingContent LIKE %:searchWord%")
     List<Funding> fundByUserOrFundingTitleOrFundingContent(@Param("searchWord") String searchWord);
+
+    Funding findByFundingId(Long fundingId);
 }

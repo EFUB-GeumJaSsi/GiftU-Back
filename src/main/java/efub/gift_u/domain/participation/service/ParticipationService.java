@@ -2,15 +2,12 @@ package efub.gift_u.domain.participation.service;
 
 import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.participation.domain.Participation;
-import efub.gift_u.domain.participation.dto.JoinRequestDto;
-import efub.gift_u.domain.participation.dto.ModifyRequestDto;
-import efub.gift_u.domain.participation.dto.ParticipationResponseDto;
+import efub.gift_u.domain.participation.dto.*;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
-import efub.gift_u.domain.participation.dto.JoinResponseDto;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,8 +49,14 @@ public class ParticipationService {
                    .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
            // 펀딩 개최자와 참여자가 동일인물인지 확인
            if (Objects.equals(user.getUserId(), funding.getUser().getUserId())) {
-                throw new CustomException(ErrorCode.INVALID_USER);
+                throw new CustomException(ErrorCode.INVALID_USER_PARTICIPATION);
            }
+
+           // 펀딩 참여 횟수를 1회로 제한
+           if(!participationRepository.findParticipationByUserIdAndFundingId(user.getUserId() , fundingId).isEmpty()){ //이미 펀딩에 참여했다면
+               throw new CustomException(ErrorCode.INVALID_ACCESS);
+           }
+
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
            funding.updateNowMoney(toAddAmount);
 
@@ -97,6 +100,17 @@ public class ParticipationService {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(modifyResponseDto);
+    }
+
+    /* 내가 참여한 펀딩의 참여한 내역 조회*/
+    public ResponseEntity<?> getMyParticipation(User user, Long fundingId) {
+       Participation participation = participationRepository.findByUserIdAndFundingId(user.getUserId() , fundingId)
+               .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
+
+        VisibilityAndMessageResponseDto dto = VisibilityAndMessageResponseDto.from(participation);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(dto);
     }
 
 }
