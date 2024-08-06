@@ -67,6 +67,7 @@ public class RefundService {
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
         log.info("결제 취소 완료 , 결제 번호  {}", paymentNumber);
+        //return response;
     }
 
 }

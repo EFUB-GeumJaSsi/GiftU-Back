@@ -39,6 +39,10 @@ public enum ErrorCode {
     INVALID_USER(HttpStatus.FORBIDDEN , "저장된 소유자와 일치하지 않습니다."), // Participation에서도 사용
     ALREADY_EXIST(HttpStatus.BAD_REQUEST , "해당 펀딩에 대한 리뷰가 이미 존재합니다."),
 
+    // Pay
+    DUPLICATED_IMP(HttpStatus.BAD_REQUEST , "결제 번호가 중복됩니다."),
+    INVALID_AMOUNT(HttpStatus.BAD_REQUEST , "결제 금액이 일치하지 않습니다."),
+
     // User
     USER_NOT_FOUND_BY_EMAIL(HttpStatus.NOT_FOUND, "해당 email를 가진 User를 찾을 수 없습니다.");
 
