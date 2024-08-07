@@ -123,14 +123,18 @@ public class FriendService {
         User firstUser = currentUser.getUserId() < friend.getUserId() ? currentUser : friend;
         User secondUser = currentUser.getUserId() > friend.getUserId() ? currentUser : friend;
 
-        Friend friendRequest = friendRepository.findByFirstUserAndSecondUser(firstUser, secondUser)
-                .orElseThrow(() -> new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
+        List<Friend> friendRequests = friendRepository.findAllByFirstUserAndSecondUser(firstUser, secondUser);
 
-        if (friendRequest.getStatus() != FriendStatus.ACCEPTED) {
+        if (friendRequests.isEmpty()) {
+            throw new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND);
+        }
+
+        boolean isFriend = friendRequests.stream().anyMatch(friendRequest -> friendRequest.getStatus() == FriendStatus.ACCEPTED);
+        if (!isFriend) {
             throw new CustomException(ErrorCode.NOT_FRIEND);
         }
 
-        friendRepository.delete(friendRequest);
+        friendRepository.deleteAll(friendRequests);
 
         return "친구가 삭제되었습니다.";
     }
