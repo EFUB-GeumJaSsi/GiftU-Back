@@ -1,9 +1,7 @@
 package efub.gift_u.global.config;
 
-import efub.gift_u.domain.oauth.errorHandler.CustomAccessDeniedHandler;
 import efub.gift_u.domain.oauth.errorHandler.CustomJwtAuthenticationEntryPoint;
 import efub.gift_u.domain.oauth.jwt.JwtAuthenticationFilter;
-import efub.gift_u.domain.oauth.jwt.JwtService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,17 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtService jwtService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomJwtAuthenticationEntryPoint customJwtAuthenticationEntryPoint;
-
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     // 인증이 필요없는 URL 패턴 목록을 정의
     private static final String[] AUTH_WHITELIST = {
-            "/api/oauth/kakao",
-            "/fundings/{fundingId}",
-            "/api/oauth/reissue",
-            "/fundings/{fundingId}/review"
+            "/api/oauth/kakao", // 로그인
+            "/fundings/{fundingId}",  // 펀딩 상세조회
+            "/api/oauth/reissue",  // 액세스 토큰 재발급
+            "/fundings/{fundingId}/review",  // 해당 펀딩 후기 조회
+            "/search"  // 검색
     };
 
     // cors 설정
@@ -69,7 +66,6 @@ public class SecurityConfig {
                 .exceptionHandling(exception ->
                 {
                     exception.authenticationEntryPoint(customJwtAuthenticationEntryPoint); // 인증 실패 시
-                    exception.accessDeniedHandler(customAccessDeniedHandler); // 접근 거부 시
                 });
 
         http.authorizeHttpRequests(auth -> {
@@ -78,7 +74,7 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 // JWT 인증 필터 추가 - UsernamePasswordAuthentication 클래스 앞에 jwtAuthenticationFilter를 등록
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
