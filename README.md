@@ -58,7 +58,7 @@
 |:------------:|:----------------:|:----------------:|
 | ![image](https://github.com/user-attachments/assets/60fe7e6d-338f-40f6-9578-065f34ae199b) | ![image](https://github.com/user-attachments/assets/aa0a04a7-1952-4e71-a926-566e2f9a6885) |![image](https://github.com/user-attachments/assets/0905f04c-7175-4185-8a44-adce058f5a4f)|
 |[@oohyj](https://github.com/oohyj)|[@stopsilver](https://github.com/stopsilver123)|[@yeojinLee1020](https://github.com/yeojinLee1020)|
-|포트원 결제 API <br> 펀딩 상세,참여 API <br> 검색 API <br> 알림 API <br> 선물 후기 API|펀딩 개설 API <br> 배포 - CI/CD (github actions), <br> 도메인, 웹서버 설정 <br> 친구 API <br> 사진 업로드(AWS S3) | 카카오 소셜 로그인/회원가입 API <br> 회원 API <br> 펀딩 리스트 API <br> 캘린더 API |
+|포트원 결제 연동 <br> 펀딩 상세,참여 API <br> 검색 API <br> 알림 API <br> 선물 후기 API|펀딩 개설 API <br> 배포 - CI/CD (github actions), <br> 도메인, 웹서버 설정 <br> 친구 API <br> 사진 업로드(AWS S3) | 카카오 소셜 로그인/회원가입 API <br> 회원 API <br> 펀딩 리스트 API <br> 캘린더 API |
 <br>
 
 ## 📜 ERD
