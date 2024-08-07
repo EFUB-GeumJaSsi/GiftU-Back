@@ -36,7 +36,7 @@ public class NoticeService {
     private final ParticipationRepository participationRepository;
 
     LocalDate today = LocalDate.now(); //오늘 날짜
-    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now(); // 조회하는 시간
     
 
     /* 친구 알림 조회 , (현재 요청 상태인 것만) 함수  */
@@ -96,7 +96,7 @@ public class NoticeService {
                                         .orElse(0.0);
                                 double percent = maxGiftPrice>0? (funding.getNowMoney()/maxGiftPrice)*100 : 0.0;
                         // 해당 펀딩의 마지막 참여자가 참여한 시간
-                        Optional<LocalDateTime> lastParticipateTime = participationRepository.findCreatedAtByUserIdAndFundingId(user.getUserId(),funding.getFundingId());
+                        Optional<LocalDateTime> lastParticipateTime = participationRepository.findCreatedAtByUserIdAndFundingId(funding.getFundingId());
                         System.out.println("가장 마지막 참여자 : " + lastParticipateTime);
                         LocalDateTime lastParticipateTimeFinal = lastParticipateTime.orElse(null);
                           return FundingAchieveDto.from(funding , percent ,lastParticipateTimeFinal);
