@@ -48,7 +48,6 @@ public class PayController {
     public ResponseEntity<?> createPayment(@PathVariable("imp_uid") String imp_uid ,@AuthUser User user , @RequestBody PayRequestDto payRequestDto)
             throws IOException {
         // 결제 번호
-        // String payNumber  = payService.generateMerchantUid(user);
         String payNumber = imp_uid;
         log.info("paymentByImpUid 진입 : {}" , payNumber);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
@@ -68,13 +67,5 @@ public class PayController {
                     .body(e.getMessage());
         }
     }
-
-
-//    @PostMapping("/payment/{imp_uid}")
-//    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid){
-//        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
-//        log.info("결제 요청 응답. 결제 번호 :{}" , payment.getResponse().getMerchantUid());
-//        return  payment;
-//    }
 
 }
