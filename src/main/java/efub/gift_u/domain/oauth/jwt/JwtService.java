@@ -26,9 +26,6 @@ public class JwtService {
 
     private final Key key;
 
-//    @Autowired
-//    private final JwtRefreshTokenRepository jwtRefreshTokenRepository;
-
     private final JwtRefreshTokenRepository jwtRefreshTokenRepository;
 
     public JwtService(@Value("${jwt.secret-key}") String secretKey, JwtRefreshTokenRepository jwtRefreshTokenRepository) {
@@ -52,14 +49,14 @@ public class JwtService {
                 .userId(userId)
                 .expiresIn(REFRESH_TOKEN_EXPIRE_TIME)
                 .build();
-        if (jwtRefreshTokenRepository.findByUserId(userId)==null){ // 신규 회원인 경우
+        if (jwtRefreshTokenRepository.findByUserId(userId) == null){ // 신규 회원인 경우
             jwtRefreshTokenRepository.save(jwtRefreshToken);
+            return JwtTokens.of(accessToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME, true);
         }
         else { // 기존 회원인 경우
             updateRefreshToken(userId, refreshToken);
+            return JwtTokens.of(accessToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME, false);
         }
-
-        return JwtTokens.of(accessToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
 
@@ -97,21 +94,26 @@ public class JwtService {
     }
 
     // 액세스 토큰 검증
-    public boolean validateToken(String accessToken) {
+    public String validateToken(String accessToken) {
         try {
             var claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(accessToken);
-            return !claims.getBody().getExpiration().before(new Date()); // 만료일자가 현재 날짜 이전인지 확인
+            if (!claims.getBody().getExpiration().before(new Date())){ // 만료일이 현재 날짜 이전인지 확인
+                return "IS_VALID";
+            }
         } catch (ExpiredJwtException e) {
-            log.info(String.valueOf(ErrorCode.TOKEN_EXPIRED)); // 토큰 만료
+            log.info(String.valueOf(ErrorCode.TOKEN_EXPIRED)); // 만료된 토큰
+            return "TOKEN_EXPIRED";
         } catch (JwtException e) {
             log.info(String.valueOf(ErrorCode.INVALID_TOKEN)); // 유효하지 않는 토큰
+            return "INVALID_TOKEN";
         } catch (Exception e) {
             log.info(String.valueOf(ErrorCode.FAIL_AUTHENTICATION)); // 토큰 검증 실패
+            return "FAIL_AUTHENTICATION";
         }
-        return false;
+        return "FAIL_AUTHENTICATION";
     }
 
     // 요청에서 토큰 추출하기
