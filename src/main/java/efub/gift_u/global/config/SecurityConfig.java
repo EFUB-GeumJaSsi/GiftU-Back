@@ -28,10 +28,11 @@ public class SecurityConfig {
 
     // 인증이 필요없는 URL 패턴 목록을 정의
     private static final String[] AUTH_WHITELIST = {
-            "/api/oauth/kakao",
-            "/fundings/{fundingId}",
-            "/api/oauth/reissue",
-            "/fundings/{fundingId}/review"
+            "/api/oauth/kakao", // 로그인
+            "/fundings/{fundingId}",  // 펀딩 상세조회
+            "/api/oauth/reissue",  // 액세스 토큰 재발급
+            "/fundings/{fundingId}/review",  // 해당 펀딩 후기 조회
+            "/search"  // 검색
     };
 
     // cors 설정
