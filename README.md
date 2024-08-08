@@ -58,7 +58,7 @@
 |:------------:|:----------------:|:----------------:|
 | ![image](https://github.com/user-attachments/assets/60fe7e6d-338f-40f6-9578-065f34ae199b) | ![image](https://github.com/user-attachments/assets/aa0a04a7-1952-4e71-a926-566e2f9a6885) |![image](https://github.com/user-attachments/assets/0905f04c-7175-4185-8a44-adce058f5a4f)|
 |[@oohyj](https://github.com/oohyj)|[@stopsilver](https://github.com/stopsilver123)|[@yeojinLee1020](https://github.com/yeojinLee1020)|
-|포트원 결제 API <br> 펀딩 상세,참여 API <br> 검색 API <br> 알림 API <br> 선물 후기 API|배포 - CI/CD (github actions), 도메인, 웹서버 설정 <br> 펀딩 개설 API <br> 친구 API <br> 사진 업로드 | 카카오 소셜 로그인/회원가입 API <br> 회원 API <br> 펀딩 리스트 API <br> 캘린더 API |
+|포트원 결제 연동 <br> 펀딩 상세,참여,비밀번호 API <br> 펀딩 검색 API <br> 알림 API <br> 펀딩 선물 후기 API|펀딩 개설,참여 취소,삭제 API <br> 배포 - CI/CD (Github Actions), <br> 도메인, 웹서버 설정 <br> 친구 API <br> 사진 업로드(AWS S3) | 카카오 OAuth2 로그인/회원가입 API <br> 회원 API <br> 펀딩 리스트 조회 API <br> 캘린더 API |
 <br>
 
 ## 📜 ERD
@@ -66,7 +66,7 @@
 <br><br>
 
 ## ✏️ API 명세서   
-### user, friend, funding, oauth(login), calender, review, notice, search, pay
+### user, friend, funding, oauth(login), calendar, review, notice, search, pay
 <br>
 
 ![image](https://github.com/user-attachments/assets/43cc0b36-f809-4cd8-9c90-0ea8070462f8)

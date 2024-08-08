@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FundingDueNoticeDto {
-
+    private String tag;
     private Long fundingId;
     private Long userId;
     private String fundingTitle;
@@ -19,7 +19,8 @@ public class FundingDueNoticeDto {
     private LocalDate fundingEndDate;
     private FundingStatus status;
 
-    public  FundingDueNoticeDto (Long fundingId , Long userId , String fundingTitle , String fundingImageUrl ,LocalDate fundingEndDate , FundingStatus status ){
+    public  FundingDueNoticeDto (String tag ,Long fundingId , Long userId , String fundingTitle , String fundingImageUrl ,LocalDate fundingEndDate , FundingStatus status ){
+        this.tag = tag;
         this.fundingId = fundingId;
         this.userId = userId;
         this.fundingTitle = fundingTitle;
@@ -30,10 +31,11 @@ public class FundingDueNoticeDto {
 
     public static FundingDueNoticeDto from(Funding funding){
         return new FundingDueNoticeDto(
+                "fundingDueDate",
                 funding.getFundingId(),
                 funding.getUser().getUserId(),
                 funding.getFundingTitle(),
-                funding.getFundingImageUrl(), 
+                funding.getFundingImageUrl(),
                 funding.getFundingEndDate(),
                 funding.getStatus()
         );

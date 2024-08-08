@@ -27,23 +27,26 @@ public class PayService {
 
     private final PayRepository paymentRepository;
     private final FundingRepository fundingRepository;
-    private final ParticipationRepository participationRepository;
+    //private final ParticipationRepository participationRepository;
 
-    /* 결제 내역  */
+    /* 결제 내역을 검증하고 DB에 결제 내역을 저장  */
     public PayResponseDto createPayment(User user  , String paymentNumber , PayRequestDto paymentRequestDto , IamportResponse<Payment> iamportResponse) {
        Long userId = user.getUserId();
        Long fundingId = paymentRequestDto.getFundingId();
        Long resAmount = iamportResponse.getResponse().getAmount().longValue();
-       // 펀딩 참여 테이블의 기여금액과 일치하는지 확인
-        Participation participation = participationRepository.findByUserIdAndFundingId(userId , fundingId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
-        if(participation.getContributionAmount() != resAmount || participation.getContributionAmount()!=paymentRequestDto.getAmount()){ // 결제 조회값이나 참여 테이블 기여금액과 다르면
+
+       // 펀딩 참여 테이블의 기여금액과 일치하는지 확인 _ 잠시 참여 테이블의 기여 금액과 같은지 확인하는 과정 생략
+//        Participation participation = participationRepository.findByUserIdAndFundingId(userId , fundingId)
+//                .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
+        //if(participation.getContributionAmount() != resAmount || participation.getContributionAmount()!=paymentRequestDto.getAmount()){ // 결제 조회값이나 참여 테이블 기여금액과 다르면
+        if(!resAmount.equals(paymentRequestDto.getAmount())){ // 포트원에서 조회해온 금액이랑 프론트에서 받은 금액이 같은지 확인,
             //금액이 다르다면 결제 취소
-            throw new IllegalArgumentException("결제 금액이 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
         }
+
         //기본키 값이 일치하는 게 있는지
         if(paymentRepository.countByPayIdContainingIgnoreCase(paymentNumber) !=0){ // 결제 번호가 겹치는 값이 있다면
-            throw new IllegalArgumentException("결제 번호 오류");
+            throw new CustomException(ErrorCode.DUPLICATED_IMP);
         }
 
        Funding funding = fundingRepository.findByFundingId(paymentRequestDto.getFundingId());
