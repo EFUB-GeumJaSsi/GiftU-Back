@@ -113,7 +113,7 @@ public class NoticeService {
 
         if(friendNoticeDto.isEmpty()){
             return ResponseEntity.status(HttpStatus.OK)
-                    .body("친구 알림이 없습니다.");
+                    .body(null);
         }
         return ResponseEntity.status(HttpStatus.OK)
                 .body(friendNoticeDto);
