@@ -2,6 +2,7 @@ package efub.gift_u.domain.funding.domain;
 
 import efub.gift_u.domain.delivery.domain.Delivery;
 import efub.gift_u.domain.gift.domain.Gift;
+import efub.gift_u.domain.pay.domain.Pay;
 import efub.gift_u.global.entity.BaseTimeEntity;
 import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.review.domain.Review;
@@ -69,6 +70,9 @@ public class Funding extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Gift> giftList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Pay> payList = new ArrayList<>();
 
     @Transient
     private LocalDateTime updatedAt;

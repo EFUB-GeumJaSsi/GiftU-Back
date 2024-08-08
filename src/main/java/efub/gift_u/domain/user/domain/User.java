@@ -3,6 +3,7 @@ package efub.gift_u.domain.user.domain;
 import efub.gift_u.domain.friend.domain.Friend;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.participation.domain.Participation;
+import efub.gift_u.domain.pay.domain.Pay;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,6 +52,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Funding> fundingList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Pay> payList = new ArrayList<>();
 
     @Builder
     public User(String nickname, String email, Date birthday, String userImageUrl, String kakaoAccessToken) {
