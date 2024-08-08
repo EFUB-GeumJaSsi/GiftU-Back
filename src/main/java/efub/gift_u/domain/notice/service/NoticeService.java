@@ -110,11 +110,6 @@ public class NoticeService {
     public ResponseEntity<?> getFriendNotice(@AuthUser User user){
 
         List<FriendNoticeDto> friendNoticeDto = friendNotice(user);
-
-        if(friendNoticeDto.isEmpty()){
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(null);
-        }
         return ResponseEntity.status(HttpStatus.OK)
                 .body(friendNoticeDto);
     }
