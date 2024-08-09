@@ -25,4 +25,8 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     @Query("SELECT f FROM Friend f JOIN FETCH f.secondUser WHERE f.secondUser = :secondUser AND f.status = :status")
     List<Friend> findAllBySecondUserAndStatusWithFetch(@Param("secondUser") User secondUser, @Param("status") FriendStatus status);
+
+    //first user과 seond user이 친구인지 확인
+     @Query("SELECT f.status from Friend f WHERE f.firstUser =:firstUser AND f.secondUser=:secondUser")
+     FriendStatus isFriendByFirstUserAndSecondUser(@Param("firstUser") Long firstUserId , @Param("secondUser") Long secondUserId);
 }
