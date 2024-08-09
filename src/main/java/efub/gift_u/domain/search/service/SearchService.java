@@ -21,7 +21,8 @@ public class SearchService {
     public ResponseEntity<?> Search(String searchWord) {
         List<Funding> funding = fundingRepository.fundByUserOrFundingTitleOrFundingContent(searchWord);
         List<SearchResponseDto> searchResponseDtos = funding.stream()
-                .map(response -> SearchResponseDto.from(response))
+                .filter(Funding::getVisibility)  // Visibility가 true인 경우만 필터링
+                .map(SearchResponseDto::from)
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK)
