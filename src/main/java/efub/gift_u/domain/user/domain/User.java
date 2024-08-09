@@ -34,7 +34,7 @@ public class User {
     @Column
     private Date birthday;
 
-    @Column
+    @Column(length = 512)
     private String userImageUrl;
 
     @Column
