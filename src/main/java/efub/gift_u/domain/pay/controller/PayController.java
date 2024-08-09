@@ -68,4 +68,13 @@ public class PayController {
         }
     }
 
+    /* 결제 취소 요청 */
+    @PostMapping("/payment/cancel/{imp_uid}")
+    public ResponseEntity<?> cancelPayment(@PathVariable("imp_uid") String imp_uid ){
+        log.info("펀딩 결제 취소 : 펀딩 참여 결제 번호 : {}" , imp_uid );
+        String token = refundService.getToken(apiKey , secretKey);
+        refundService.refundRequest(token , imp_uid , "결제 취소");
+        return refundService.deletePayment(imp_uid);
+    }
+
 }
