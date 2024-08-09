@@ -1,15 +1,11 @@
 package efub.gift_u.domain.user.service;
 
-import efub.gift_u.domain.friend.service.FriendService;
-import efub.gift_u.domain.user.dto.UserResponseDto;
-import efub.gift_u.domain.user.dto.UserUpdateResponseDto;
 import efub.gift_u.domain.user.repository.UserRepository;
 import efub.gift_u.global.S3Image.service.S3ImageService;
 import efub.gift_u.domain.user.domain.User;
 import efub.gift_u.domain.user.dto.UserUpdateRequestDto;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +35,7 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
-        String userImageUrl = requestDto.getUserImageUrl();
+        String userImageUrl = user.getUserImageUrl();
         if (multipartFile != null && !multipartFile.isEmpty()) {
             // 새로운 이미지를 업로드
             String newFileName = s3ImageService.upload(multipartFile, "images/userImages");
