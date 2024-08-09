@@ -1,5 +1,6 @@
 package efub.gift_u.domain.participation.service;
 
+import efub.gift_u.domain.friend.repository.FriendRepository;
 import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.participation.dto.*;
@@ -20,6 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import static efub.gift_u.domain.friend.domain.FriendStatus.ACCEPTED;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class ParticipationService {
 
     private final ParticipationRepository participationRepository;
     private final FundingRepository fundingRepository;
+    private final FriendRepository friendRepository;
     private final GiftRepository giftRepository;
 
 
@@ -54,6 +58,11 @@ public class ParticipationService {
 
            // 펀딩 참여 횟수를 1회로 제한
            if(!participationRepository.findParticipationByUserIdAndFundingId(user.getUserId() , fundingId).isEmpty()){ //이미 펀딩에 참여했다면
+               throw new CustomException(ErrorCode.ALREADY_PARTICIPATED);
+           }
+
+           // 펀딩 개설자와 친구인 경우만 펀딩 참여 가능
+           if(friendRepository.isFriendByFirstUserAndSecondUser(funding.getUser().getUserId() , user.getUserId())== ACCEPTED ||friendRepository.isFriendByFirstUserAndSecondUser(user.getUserId(),funding.getUser().getUserId())== ACCEPTED){
                throw new CustomException(ErrorCode.INVALID_ACCESS);
            }
 
