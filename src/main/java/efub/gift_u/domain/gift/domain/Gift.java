@@ -29,7 +29,7 @@ public class Gift {
     @Column(nullable = false)
     private String giftUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 512)
     private String giftImageUrl;
 
     @Builder
