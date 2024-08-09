@@ -1,11 +1,12 @@
 package efub.gift_u.domain.pay.service;
 
+import efub.gift_u.domain.pay.domain.Pay;
+import efub.gift_u.domain.pay.repository.PayRepository;
+import efub.gift_u.global.exception.CustomException;
+import efub.gift_u.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +23,8 @@ import java.util.Map;
 public class RefundService {
 
     private final RestTemplate restTemplate;
+
+    private final PayRepository payRepository;
 
     public String getToken(String apiKey, String secretKey) {
         String url = "https://api.iamport.kr/users/getToken";
@@ -70,4 +73,12 @@ public class RefundService {
         //return response;
     }
 
+    /* DB에서 결제 내역 삭제 */
+    public ResponseEntity<?> deletePayment(String payNumber){
+        Pay pay = payRepository.findById(payNumber)
+                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+        payRepository.delete(pay);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("결제 내역이 삭제되었습니다.");
+    }
 }

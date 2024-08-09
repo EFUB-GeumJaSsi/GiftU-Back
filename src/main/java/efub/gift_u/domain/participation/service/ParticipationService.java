@@ -5,6 +5,9 @@ import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.participation.dto.*;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
+import efub.gift_u.domain.pay.repository.PayRepository;
+import efub.gift_u.domain.pay.service.PayService;
+import efub.gift_u.domain.pay.service.RefundService;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
 import efub.gift_u.domain.funding.domain.Funding;
@@ -21,8 +24,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import static efub.gift_u.domain.friend.domain.FriendStatus.ACCEPTED;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,10 +31,10 @@ public class ParticipationService {
 
     private final ParticipationRepository participationRepository;
     private final FundingRepository fundingRepository;
-    private final FriendRepository friendRepository;
     private final GiftRepository giftRepository;
+    private final PayRepository payRepository;
 
-
+    private final RefundService refundService;
 
     /* 특정 펀딩에 대한 기여자 조회 */
     public List<ParticipationResponseDto> getParticipationDetail(Funding funding){
@@ -61,11 +62,6 @@ public class ParticipationService {
                throw new CustomException(ErrorCode.ALREADY_PARTICIPATED);
            }
 
-           // 펀딩 개설자와 친구인 경우만 펀딩 참여 가능
-           if(friendRepository.isFriendByFirstUserAndSecondUser(funding.getUser().getUserId() , user.getUserId())== ACCEPTED ||friendRepository.isFriendByFirstUserAndSecondUser(user.getUserId(),funding.getUser().getUserId())== ACCEPTED){
-               throw new CustomException(ErrorCode.INVALID_ACCESS);
-           }
-
            Long toAddAmount = requestDto.getContributionAmount(); //funding 테이블의 nowMoney를 업데이트 하기 위해
            funding.updateNowMoney(toAddAmount);
 
@@ -90,6 +86,9 @@ public class ParticipationService {
 
         Funding funding = participation.getFunding();
         funding.updateNowMoney(-participation.getContributionAmount());
+        //결제 취소
+        String imp_uid = payRepository.findByFundingIdAndUserId(funding.getFundingId() , user.getUserId());
+
         participationRepository.delete(participation);
     }
 
