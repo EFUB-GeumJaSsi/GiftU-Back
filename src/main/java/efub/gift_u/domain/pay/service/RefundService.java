@@ -2,10 +2,7 @@ package efub.gift_u.domain.pay.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -47,7 +44,7 @@ public class RefundService {
         log.info("Iamport 엑세스 토큰 발급 성공 : ", accessToken);
         return accessToken;
     }
-    public void refundRequest(String token, String paymentNumber, String message) {
+    public ResponseEntity<?> refundRequest(String token, String paymentNumber, String message) {
         String url = "https://api.iamport.kr/payments/cancel";
 
         // 요청 헤더 설정
@@ -67,7 +64,8 @@ public class RefundService {
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
         log.info("결제 취소 완료 , 결제 번호  {}", paymentNumber);
-        //return response;
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(response);
     }
 
 }
