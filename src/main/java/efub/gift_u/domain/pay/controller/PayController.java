@@ -63,7 +63,8 @@ public class PayController {
             log.info("펀딩 참여 결제 취소 : 펀딩 참여 결제 번호 {}" ,  payNumber);
             String token = refundService.getToken(apiKey , secretKey);
             refundService.refundRequest(token , payNumber , e.getMessage());
-            return refundService.refundRequest(token , payNumber , e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
@@ -72,7 +73,8 @@ public class PayController {
     public ResponseEntity<?> cancelPayment(@PathVariable("imp_uid") String imp_uid ){
         log.info("펀딩 결제 취소 : 펀딩 참여 결제 번호 : {}" , imp_uid );
         String token = refundService.getToken(apiKey , secretKey);
-        return refundService.refundRequest(token , imp_uid , "결제 취소");
+        refundService.refundRequest(token , imp_uid , "결제 취소");
+        return refundService.deletePayment(imp_uid);
     }
 
 }
