@@ -4,6 +4,8 @@ import efub.gift_u.domain.funding.dto.*;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.gift.dto.GiftResponseDto;
 import efub.gift_u.domain.gift.repository.GiftRepository;
+import efub.gift_u.domain.pay.repository.PayRepository;
+import efub.gift_u.domain.pay.service.PayService;
 import efub.gift_u.domain.review.repository.ReviewRepository;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
@@ -18,6 +20,7 @@ import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.participation.service.ParticipationService;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,9 +34,11 @@ import java.util.stream.Collectors;
 import static efub.gift_u.domain.funding.domain.FundingStatus.IN_PROGRESS;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class FundingService {
+
     private final FundingRepository fundingRepository;
     private final ParticipationService participationService;
     private final ParticipationRepository participationRepository;
@@ -41,6 +46,8 @@ public class FundingService {
     private final GiftService giftService;
     private final ReviewRepository reviewRepository;
     private final GiftRepository giftRepository;
+    private final PayRepository payRepository;
+    private final PayService payService;
 
     //펀딩 이미지 URL 업데이트
     public void updateFundingImageUrl(Funding funding){
@@ -176,7 +183,7 @@ public class FundingService {
         return new AllFundingResponseDto(dtoList);
     }
 
-    // list를 dto로 변환
+    /* list를 dto로 변환 */
     private List<IndividualFundingResponseDto> convertToDtoList(List<Funding> fundings){
         return fundings.stream()
                 .map(IndividualFundingResponseDto::from)
@@ -191,7 +198,8 @@ public class FundingService {
         String compPassword = fundingPasswordDto.getPassword();
         return compPassword.equals(funding.getPassword());
     }
-    // 펀딩 삭제
+
+    /* 펀딩 삭제 */
     @Transactional
     public void deleteFunding(Long fundingId, User user) {
         Funding funding = fundingRepository.findById(fundingId)
@@ -199,9 +207,23 @@ public class FundingService {
         if (!funding.getUser().getUserId().equals(user.getUserId())) {
             throw new CustomException(ErrorCode.FUNDING_DELETE_ACCESS_DENIED);
         }
+
+        //해당 펀딩과 관련된 결제 취소
+        List<String> payId = payRepository.findByFundingId(fundingId);
+        for (String imp_uid : payId) {
+            boolean res = payService.cancelPayment(payId);
+
+            if (res) {
+                log.info("결제가 성공적으로 취소되었습니다: {}", imp_uid );
+            } else {
+                log.warn(" 결제 취소를 실패했습니다 : {}", imp_uid );
+            }
+        }
+
         giftService.deleteGifts(funding);
         fundingRepository.delete(funding);
     }
+
     //펀딩 상태 업데이트
     public void updateFundingStatus(){
         List<Funding> fundings = fundingRepository.findAll();

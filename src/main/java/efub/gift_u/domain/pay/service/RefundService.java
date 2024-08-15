@@ -1,11 +1,14 @@
 package efub.gift_u.domain.pay.service;
 
+import com.siot.IamportRestClient.IamportClient;
 import efub.gift_u.domain.pay.domain.Pay;
 import efub.gift_u.domain.pay.repository.PayRepository;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +29,19 @@ public class RefundService {
 
     private final PayRepository payRepository;
 
-    public String getToken(String apiKey, String secretKey) {
+    @Value("${portone.api.key}")
+    private String apiKey;
+
+    @Value("${portone.api.secretKey}")
+    private String secretKey;
+    private IamportClient iamportClient;
+
+    @PostConstruct
+    public void init() {
+        this.iamportClient = new IamportClient(apiKey, secretKey);
+    }
+
+    public String getToken() {
         String url = "https://api.iamport.kr/users/getToken";
 
         // 요청 헤더 설정

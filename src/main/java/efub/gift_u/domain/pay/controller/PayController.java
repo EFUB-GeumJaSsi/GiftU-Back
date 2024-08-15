@@ -29,19 +29,19 @@ import java.io.IOException;
 public class PayController {
 
     private final PayService payService;
-    private final RefundService refundService;
+    //private final RefundService refundService;
 
-    @Value("${portone.api.key}")
-    private String apiKey;
-
-    @Value("${portone.api.secretKey}")
-    private String secretKey;
-    private IamportClient iamportClient;
-
-    @PostConstruct
-    public void init() {
-        this.iamportClient = new IamportClient(apiKey, secretKey);
-    }
+//    @Value("${portone.api.key}")
+//    private String apiKey;
+//
+//    @Value("${portone.api.secretKey}")
+//    private String secretKey;
+//    private IamportClient iamportClient;
+//
+//    @PostConstruct
+//    public void init() {
+//        this.iamportClient = new IamportClient(apiKey, secretKey);
+//    }
 
     /* 결제 검증 및 결제 내역 저장  */
     @PostMapping("/payment/{imp_uid}")
@@ -49,22 +49,31 @@ public class PayController {
             throws IOException {
         // 결제 번호
         String payNumber = imp_uid;
-        log.info("paymentByImpUid 진입 : {}" , payNumber);
-        IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
+        log.info("결제 시작 : {}" , payNumber);
+        //IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
 
-        log.info("결제 요청 응답. 결제 번호 :{}" ,iamportResponse.getResponse().getMerchantUid());
+        //log.info("결제 요청 응답. 결제 번호 :{}" ,iamportResponse.getResponse().getMerchantUid());
         try {
-            PayResponseDto payResponseDto = payService.createPayment(user, payNumber ,payRequestDto , iamportResponse);
+            PayResponseDto payResponseDto = payService.createPayment(user, payNumber ,payRequestDto);
             log.info("결제 성공 ! 펀딩 참여 결제 번호 : {} " , payNumber);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(payResponseDto);
         }
         catch (CustomException e){
             log.info("펀딩 참여 결제 취소 : 펀딩 참여 결제 번호 {}" ,  payNumber);
-            String token = refundService.getToken(apiKey , secretKey);
-            refundService.refundRequest(token , payNumber , e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+            boolean res = payService.cancelPayment(payNumber);
+            if(res){
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("결제 취소가 완료되었습니다.");
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("결제 취소를 실패하였습니다.");
+            }
+//            String token = refundService.getToken();
+//            refundService.refundRequest(token , payNumber , e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(e.getMessage());
         }
     }
 
@@ -72,9 +81,17 @@ public class PayController {
     @PostMapping("/payment/cancel/{imp_uid}")
     public ResponseEntity<?> cancelPayment(@PathVariable("imp_uid") String imp_uid ){
         log.info("펀딩 결제 취소 : 펀딩 참여 결제 번호 : {}" , imp_uid );
-        String token = refundService.getToken(apiKey , secretKey);
-        refundService.refundRequest(token , imp_uid , "결제 취소");
-        return refundService.deletePayment(imp_uid);
+//        String token = refundService.getToken();
+//        refundService.refundRequest(token , imp_uid , "결제 취소");
+        boolean res = payService.cancelPayment(imp_uid);
+        if(res){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("결제 취소가 완료되었습니다.");
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("결제 취소를 실패하였습니다.");
+        }
     }
 
 }
