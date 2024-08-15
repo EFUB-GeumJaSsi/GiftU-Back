@@ -6,8 +6,6 @@ import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
-import efub.gift_u.domain.participation.domain.Participation;
-import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.pay.domain.Pay;
 import efub.gift_u.domain.pay.dto.Request.PayRequestDto;
 import efub.gift_u.domain.pay.dto.Response.PayResponseDto;
