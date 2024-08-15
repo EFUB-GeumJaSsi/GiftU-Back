@@ -14,6 +14,7 @@ import efub.gift_u.domain.funding.domain.Funding;
 import efub.gift_u.domain.funding.repository.FundingRepository;
 import efub.gift_u.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class ParticipationService {
     private final GiftRepository giftRepository;
     private final PayRepository payRepository;
 
-    private final RefundService refundService;
+    private final PayService payService;
 
     /* 특정 펀딩에 대한 기여자 조회 */
     public List<ParticipationResponseDto> getParticipationDetail(Funding funding){
@@ -88,6 +90,12 @@ public class ParticipationService {
         funding.updateNowMoney(-participation.getContributionAmount());
         //결제 취소
         String imp_uid = payRepository.findByFundingIdAndUserId(funding.getFundingId() , user.getUserId());
+        boolean res = payService.cancelPayment(imp_uid);
+        if (res) {
+            log.info("결제가 성공적으로 취소되었습니다: {}", imp_uid);
+        } else {
+            log.warn(" 결제 취소를 실패했습니다 : {}", imp_uid);
+        }
 
         participationRepository.delete(participation);
     }
