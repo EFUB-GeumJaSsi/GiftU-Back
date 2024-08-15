@@ -211,7 +211,7 @@ public class FundingService {
         //해당 펀딩과 관련된 결제 취소
         List<String> payId = payRepository.findByFundingId(fundingId);
         for (String imp_uid : payId) {
-            boolean res = payService.cancelPayment(payId);
+            boolean res = payService.cancelPayment(imp_uid);
 
             if (res) {
                 log.info("결제가 성공적으로 취소되었습니다: {}", imp_uid );
