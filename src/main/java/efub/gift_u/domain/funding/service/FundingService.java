@@ -200,28 +200,31 @@ public class FundingService {
     }
 
     /* 펀딩 삭제 */
-    @Transactional
-    public void deleteFunding(Long fundingId, User user) {
+    public ResponseEntity<?> deleteFunding(Long fundingId, User user) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
         if (!funding.getUser().getUserId().equals(user.getUserId())) {
             throw new CustomException(ErrorCode.FUNDING_DELETE_ACCESS_DENIED);
         }
-
-        //해당 펀딩과 관련된 결제 취소
-        List<String> payId = payRepository.findByFundingId(fundingId);
-        for (String imp_uid : payId) {
-            boolean res = payService.cancelPayment(imp_uid);
-
-            if (res) {
-                log.info("결제가 성공적으로 취소되었습니다: {}", imp_uid );
-            } else {
-                log.warn(" 결제 취소를 실패했습니다 : {}", imp_uid );
-            }
-        }
-
         giftService.deleteGifts(funding);
         fundingRepository.delete(funding);
+        // 해당 펀딩과 관련된 결제 취소
+        List<String> payId = payRepository.findByFundingId(fundingId);
+        List<ResponseEntity<?>> responses = new ArrayList<>();
+
+        for (String imp_uid : payId) {
+            ResponseEntity<?> response = payService.cancelPayment(imp_uid);
+            responses.add(response);
+        }
+
+        // 모든 응답이 OK인지 확인
+        boolean allOk = responses.stream().allMatch(response -> response.getStatusCode() == HttpStatus.OK);
+
+        if (allOk) {
+            return ResponseEntity.status(HttpStatus.OK).body("펀딩과 모든 결제가 취소되었습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body("펀딩이 삭제되었지만 일부 결제 취소가 실패했습니다.");
+        }
     }
 
     //펀딩 상태 업데이트
