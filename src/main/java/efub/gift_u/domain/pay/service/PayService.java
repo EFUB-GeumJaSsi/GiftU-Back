@@ -18,6 +18,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,22 +80,32 @@ public class PayService {
     }
 
     // iamportclient를 이용한 포트원 서버로 결제 취소 요청
-    public boolean cancelPayment(String imp_uid){
+    public ResponseEntity<?> cancelPayment(String imp_uid){
         try{
             CancelData cancelData= new CancelData(imp_uid , true);
             IamportResponse<Payment> payment = iamportClient.cancelPaymentByImpUid(cancelData);
-            deletePayment(imp_uid);
-            log.info("결제 취소된 내역 : {} " , payment.getResponse());
-            return true;
+
+            log.info("{} " , payment.getMessage());
+            if(payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
+                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                         .body("포트원에 해당 결제건이 존재하지 않습니다.");
+            }
+                deletePayment(imp_uid);
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("해당 결제가 취소되었습니다.");
         } catch (Exception e){
             log.info("결제 취소 실패 : {}" , e);
-            return false;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("결제 취소를 실패하였습니다.");
         }
     }
 
     private void deletePayment(String imp_uid){
-        Pay pay = payRepository.findById(imp_uid)
-                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+        Pay pay = payRepository.findByPayId(imp_uid);
+        log.info("삭제된 pay : {}" , pay);
+        if(pay == null){
+            throw new CustomException(ErrorCode.PAYMENT_NOT_FOUND);
+        }
         payRepository.delete(pay);
     }
 }

@@ -61,15 +61,7 @@ public class PayController {
         }
         catch (CustomException e){
             log.info("펀딩 참여 결제 취소 : 펀딩 참여 결제 번호 {}" ,  payNumber);
-            boolean res = payService.cancelPayment(payNumber);
-            if(res){
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body("결제 취소가 완료되었습니다.");
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("결제 취소를 실패하였습니다.");
-            }
+           return payService.cancelPayment(payNumber);
 //            String token = refundService.getToken();
 //            refundService.refundRequest(token , payNumber , e.getMessage());
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -83,15 +75,16 @@ public class PayController {
         log.info("펀딩 결제 취소 : 펀딩 참여 결제 번호 : {}" , imp_uid );
 //        String token = refundService.getToken();
 //        refundService.refundRequest(token , imp_uid , "결제 취소");
-        boolean res = payService.cancelPayment(imp_uid);
-        if(res){
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("결제 취소가 완료되었습니다.");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("결제 취소를 실패하였습니다.");
-        }
+//          boolean res = payService.cancelPayment(imp_uid);
+//        if(res){
+//            return ResponseEntity.status(HttpStatus.OK)
+//                    .body("결제 취소가 완료되었습니다.");
+//        }
+//        else{
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("결제 취소를 실패하였습니다.");
+//        }
+        return payService.cancelPayment(imp_uid);
     }
 
 }
