@@ -31,9 +31,8 @@ public class ParticipationController {
 
     /* 펀딩 참여 취소 */
     @DeleteMapping("/participation/{participationId}")
-    public ResponseEntity<String> cancelFundingParticipation(@AuthUser User user, @PathVariable("participationId") Long participationId) {
-        participationService.cancelFundingParticipation(user, participationId);
-        return ResponseEntity.ok("펀딩 참여가 성공적으로 취소되었습니다.");
+    public ResponseEntity<?> cancelFundingParticipation(@AuthUser User user, @PathVariable("participationId") Long participationId) {
+        return participationService.cancelFundingParticipation(user, participationId);
     }
 
     /*펀딩 익명성 변경 및 축하 메세지 변경 */

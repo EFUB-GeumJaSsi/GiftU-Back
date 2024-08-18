@@ -11,6 +11,9 @@ public interface PayRepository extends JpaRepository<Pay, String> {
 
     long countByPayIdContainingIgnoreCase(String payId);
 
+    @Query("SELECT p FROM Pay p where p.payId =:payId")
+    Pay findByPayId(@Param("payId") String payId);
+
     @Query("SELECT p.payId FROM Pay p where p.funding.fundingId =:fundingId AND  p.user.userId =:userId")
     String findByFundingIdAndUserId(@Param("fundingId") Long fundingId ,@Param("userId") Long userId);
 

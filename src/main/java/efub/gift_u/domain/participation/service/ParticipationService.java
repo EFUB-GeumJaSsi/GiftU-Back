@@ -82,22 +82,22 @@ public class ParticipationService {
 
 
     /* 펀딩 참여 취소 */
-    public void cancelFundingParticipation(User user, Long participationId) {
+    public ResponseEntity<?> cancelFundingParticipation(User user, Long participationId) {
         Participation participation = participationRepository.findByParticipationIdAndUserId(participationId, user.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PARTICIPATION_NOT_FOUND));
 
         Funding funding = participation.getFunding();
         funding.updateNowMoney(-participation.getContributionAmount());
+        participationRepository.delete(participation);
         //결제 취소
         String imp_uid = payRepository.findByFundingIdAndUserId(funding.getFundingId() , user.getUserId());
-        boolean res = payService.cancelPayment(imp_uid);
-        if (res) {
-            log.info("결제가 성공적으로 취소되었습니다: {}", imp_uid);
+        ResponseEntity<?> payRes = payService.cancelPayment(imp_uid);
+        if (payRes.getStatusCode() == HttpStatus.OK) {
+            return ResponseEntity.status(HttpStatus.OK).body("펀딩과 모든 결제가 취소되었습니다.");
         } else {
-            log.warn(" 결제 취소를 실패했습니다 : {}", imp_uid);
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body("펀딩이 삭제되었지만 결제 취소에 실패했습니다.");
         }
 
-        participationRepository.delete(participation);
     }
 
     /*펀딩 참여 익명성 및 메세지 수정*/
