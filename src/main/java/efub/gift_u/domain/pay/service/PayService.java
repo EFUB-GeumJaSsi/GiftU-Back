@@ -61,17 +61,23 @@ public class PayService {
 
         if(!resAmount.equals(paymentRequestDto.getAmount())){ // 포트원에서 조회해온 금액이랑 프론트에서 받은 금액이 같은지 확인,
             //금액이 다르다면 결제 취소
+            log.info("금액이 일치하지 않음");
             throw new CustomException(ErrorCode.INVALID_AMOUNT);
+
         }
 
         //기본키 값이 일치하는 게 있는지
         if(paymentRepository.countByPayIdContainingIgnoreCase(paymentNumber) !=0){ // 결제 번호가 겹치는 값이 있다면
+            log.info("결제번호가 겹침");
             throw new CustomException(ErrorCode.DUPLICATED_IMP);
         }
-
+        log.info("2가지 에러에 해당하지 않음");
        Funding funding = fundingRepository.findByFundingId(paymentRequestDto.getFundingId());
+       log.info("저장할 fundingId : {}" , funding.getFundingId());
        Pay pay = Pay.toEntity(paymentNumber ,user , funding , paymentRequestDto.getAmount());
+        log.info("엔티티 완성");
        paymentRepository.save(pay);
+       log.info("데이터 저장 성공");
        log.info("결제 성공 : 결제 번호 {}" , pay.getPayId());
        PayResponseDto payRes = PayResponseDto.from(pay.getPayId() , pay.getUser().getUserId() ,
                pay.getFunding().getFundingId() , pay.getAmount()
