@@ -94,7 +94,8 @@ public class FundingController {
     //펀딩 삭제
     @DeleteMapping("/{fundingId}")
     public ResponseEntity<?> deleteFunding(@AuthUser User user, @PathVariable Long fundingId){
-        return fundingService.deleteFunding(fundingId, user);
+        return ResponseEntity.status(HttpStatus.OK)
+                        .body(fundingService.deleteFunding(fundingId, user));
     }
 
     /* 주어진 기간 내 날짜별 마감 펀딩 존재 유무 조회 - 캘린더 */
