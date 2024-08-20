@@ -91,8 +91,8 @@ public class ParticipationService {
         participationRepository.delete(participation);
         //결제 취소
         String imp_uid = payRepository.findByFundingIdAndUserId(funding.getFundingId() , user.getUserId());
-        ResponseEntity<?> payRes = payService.cancelPayment(imp_uid);
-        if (payRes.getStatusCode() == HttpStatus.OK) {
+        String payRes = payService.cancelPayment(imp_uid);
+        if (payRes.equals("해당 결제가 취소되었습니다.")) {
             return ResponseEntity.status(HttpStatus.OK).body("펀딩과 모든 결제가 취소되었습니다.");
         } else {
             return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body("펀딩이 삭제되었지만 결제 취소에 실패했습니다.");

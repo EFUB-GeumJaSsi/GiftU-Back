@@ -84,7 +84,7 @@ public class FundingService {
 
 
     /* 펀딩 상세 조회 */
-    public ResponseEntity<FundingResponseDetailDto> getFundingDetail(Long fundingId) {
+    public FundingResponseDetailDto getFundingDetail(Long fundingId) {
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FUNDING_NOT_FOUND));
         // 펀딩 선물 후기 존재 여부
@@ -96,8 +96,9 @@ public class FundingService {
 
         updateFundingImageUrl(funding);
 
-        return  ResponseEntity.status(HttpStatus.OK)
-                .body(FundingResponseDetailDto.from(funding , participationService.getParticipationDetail(funding) , isExistedReview , giftResponseDtos));
+        FundingResponseDetailDto dto =FundingResponseDetailDto.from(funding , participationService.getParticipationDetail(funding) , isExistedReview , giftResponseDtos);
+
+        return dto;
     }
 
 
@@ -210,15 +211,15 @@ public class FundingService {
         fundingRepository.delete(funding);
         // 해당 펀딩과 관련된 결제 취소
         List<String> payId = payRepository.findByFundingId(fundingId);
-        List<ResponseEntity<?>> responses = new ArrayList<>();
+        List<String> responses = new ArrayList<>();
 
         for (String imp_uid : payId) {
-            ResponseEntity<?> response = payService.cancelPayment(imp_uid);
-            responses.add(response);
+            String payRes = payService.cancelPayment(imp_uid);
+            responses.add(payRes);
         }
 
         // 모든 응답이 OK인지 확인
-        boolean allOk = responses.stream().allMatch(response -> response.getStatusCode() == HttpStatus.OK);
+        boolean allOk = responses.stream().allMatch(payRes -> payRes.equals("해당 결제가 취소되었습니다."));
 
         if (allOk) {
             return ResponseEntity.status(HttpStatus.OK).body("펀딩과 모든 결제가 취소되었습니다.");

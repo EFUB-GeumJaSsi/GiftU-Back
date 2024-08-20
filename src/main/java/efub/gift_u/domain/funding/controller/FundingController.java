@@ -35,7 +35,8 @@ public class FundingController {
     /*펀딩 상세 조회*/
     @GetMapping("/{fundingId}")
     public ResponseEntity<FundingResponseDetailDto> getFundingDetail(@PathVariable("fundingId") Long fundingId){
-        return fundingService.getFundingDetail(fundingId);
+        return ResponseEntity.status(HttpStatus.OK)
+                        .body(fundingService.getFundingDetail(fundingId));
     }
 
 

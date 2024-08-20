@@ -51,7 +51,6 @@ public class PayController {
         String payNumber = imp_uid;
         log.info("결제 시작 : {}" , payNumber);
         //IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(payNumber);
-
         //log.info("결제 요청 응답. 결제 번호 :{}" ,iamportResponse.getResponse().getMerchantUid());
         try {
             PayResponseDto payResponseDto = payService.createPayment(user, payNumber ,payRequestDto);
@@ -61,7 +60,8 @@ public class PayController {
         }
         catch (CustomException e){
             log.info("펀딩 참여 결제 취소 : 펀딩 참여 결제 번호 {}" ,  payNumber);
-           return payService.cancelPayment(payNumber);
+           return  ResponseEntity.status(HttpStatus.OK)
+                           .body(payService.cancelPayment(payNumber));
 //            String token = refundService.getToken();
 //            refundService.refundRequest(token , payNumber , e.getMessage());
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -84,7 +84,8 @@ public class PayController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 //                    .body("결제 취소를 실패하였습니다.");
 //        }
-        return payService.cancelPayment(imp_uid);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(payService.cancelPayment(imp_uid));
     }
 
 }
