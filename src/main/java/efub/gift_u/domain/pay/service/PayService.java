@@ -92,7 +92,7 @@ public class PayService {
             IamportResponse<Payment> payment = iamportClient.cancelPaymentByImpUid(cancelData);
 
             log.info("{} " , payment.getMessage());
-            if(payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
+            if(payment != null && payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
                  return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                          .body("포트원에 해당 결제건이 존재하지 않습니다.");
             }
