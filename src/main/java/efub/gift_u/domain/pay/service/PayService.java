@@ -75,7 +75,6 @@ public class PayService {
        Funding funding = fundingRepository.findByFundingId(paymentRequestDto.getFundingId());
        log.info("저장할 fundingId : {}" , funding.getFundingId());
        Pay pay = Pay.toEntity(paymentNumber ,user , funding , paymentRequestDto.getAmount());
-        log.info("엔티티 완성");
        paymentRepository.save(pay);
        log.info("데이터 저장 성공");
        log.info("결제 성공 : 결제 번호 {}" , pay.getPayId());
@@ -86,23 +85,23 @@ public class PayService {
     }
 
     // iamportclient를 이용한 포트원 서버로 결제 취소 요청
-    public ResponseEntity<?> cancelPayment(String imp_uid){
+    public String cancelPayment(String imp_uid){
         try{
             CancelData cancelData= new CancelData(imp_uid , true);
             IamportResponse<Payment> payment = iamportClient.cancelPaymentByImpUid(cancelData);
 
             log.info("{} " , payment.getMessage());
             if(payment != null && payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
-                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                         .body("포트원에 해당 결제건이 존재하지 않습니다.");
+                 return "포트원에 해당 결제건이 존재하지 않습니다.";
+            }
+            else if(payment != null && payment.getMessage().trim().equals("이미 전액취소된 주문입니다.")){
+                return "이미 취소한 결제건입니다.";
             }
                 deletePayment(imp_uid);
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body("해당 결제가 취소되었습니다.");
+                return "해당 결제가 취소되었습니다.";
         } catch (Exception e){
             log.info("결제 취소 실패 : {}" , e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("결제 취소를 실패하였습니다.");
+            return "결제 취소를 실패하였습니다.";
         }
     }
 
