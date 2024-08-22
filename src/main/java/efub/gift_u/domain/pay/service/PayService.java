@@ -18,8 +18,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,10 +89,11 @@ public class PayService {
             IamportResponse<Payment> payment = iamportClient.cancelPaymentByImpUid(cancelData);
 
             log.info("{} " , payment.getMessage());
-            if(payment != null && payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
+            if(payment.getMessage() != null && payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
+                
                  return "포트원에 해당 결제건이 존재하지 않습니다.";
             }
-            else if(payment != null && payment.getMessage().trim().equals("이미 전액취소된 주문입니다.")){
+            else if(payment.getMessage() != null && payment.getMessage().trim().equals("이미 전액취소된 주문입니다.")){
                 return "이미 취소한 결제건입니다.";
             }
                 deletePayment(imp_uid);
@@ -105,7 +104,7 @@ public class PayService {
         }
     }
 
-    private void deletePayment(String imp_uid){
+    public void deletePayment(String imp_uid){
         Pay pay = payRepository.findByPayId(imp_uid);
         log.info("삭제된 pay : {}" , pay);
         if(pay == null){
