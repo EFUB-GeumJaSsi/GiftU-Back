@@ -30,7 +30,6 @@ public class PayService {
     private final PayRepository paymentRepository;
     private final FundingRepository fundingRepository;
     private final PayRepository payRepository;
-    //private final ParticipationRepository participationRepository;
 
     @Value("${portone.api.key}")
     private String apiKey;
@@ -66,16 +65,12 @@ public class PayService {
 
         //기본키 값이 일치하는 게 있는지
         if(paymentRepository.countByPayIdContainingIgnoreCase(paymentNumber) !=0){ // 결제 번호가 겹치는 값이 있다면
-            log.info("결제번호가 겹침");
             throw new CustomException(ErrorCode.DUPLICATED_IMP);
         }
-        log.info("2가지 에러에 해당하지 않음");
+
        Funding funding = fundingRepository.findByFundingId(paymentRequestDto.getFundingId());
-       log.info("저장할 fundingId : {}" , funding.getFundingId());
        Pay pay = Pay.toEntity(paymentNumber ,user , funding , paymentRequestDto.getAmount());
        paymentRepository.save(pay);
-       log.info("데이터 저장 성공");
-       log.info("결제 성공 : 결제 번호 {}" , pay.getPayId());
        PayResponseDto payRes = PayResponseDto.from(pay.getPayId() , pay.getUser().getUserId() ,
                pay.getFunding().getFundingId() , pay.getAmount()
                );
@@ -90,7 +85,6 @@ public class PayService {
 
             log.info("{} " , payment.getMessage());
             if(payment.getMessage() != null && payment.getMessage().trim().equals("취소할 결제건이 존재하지 않습니다.")){
-                
                  return "포트원에 해당 결제건이 존재하지 않습니다.";
             }
             else if(payment.getMessage() != null && payment.getMessage().trim().equals("이미 전액취소된 주문입니다.")){
@@ -99,7 +93,6 @@ public class PayService {
                 deletePayment(imp_uid);
                 return "해당 결제가 취소되었습니다.";
         } catch (Exception e){
-            log.info("결제 취소 실패 : {}" , e);
             return "결제 취소를 실패하였습니다.";
         }
     }
