@@ -1,13 +1,11 @@
 package efub.gift_u.domain.participation.service;
 
-import efub.gift_u.domain.friend.repository.FriendRepository;
 import efub.gift_u.domain.gift.repository.GiftRepository;
 import efub.gift_u.domain.participation.domain.Participation;
 import efub.gift_u.domain.participation.dto.*;
 import efub.gift_u.domain.participation.repository.ParticipationRepository;
 import efub.gift_u.domain.pay.repository.PayRepository;
 import efub.gift_u.domain.pay.service.PayService;
-import efub.gift_u.domain.pay.service.RefundService;
 import efub.gift_u.global.exception.CustomException;
 import efub.gift_u.global.exception.ErrorCode;
 import efub.gift_u.domain.funding.domain.Funding;

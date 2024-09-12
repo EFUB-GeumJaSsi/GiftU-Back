@@ -2,6 +2,7 @@ package efub.gift_u.domain.delivery.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class Delivery {
     private String addressDetail1;
     private String addressDetail2;
 
+    @Builder
     public Delivery(String name, String phoneNumber, String addressNumber, String addressDetail1, String addressDetail2) {
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -22,4 +24,6 @@ public class Delivery {
         this.addressDetail1 = addressDetail1;
         this.addressDetail2 = addressDetail2;
     }
+
+
 }
