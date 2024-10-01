@@ -26,10 +26,10 @@ public class Gift {
     @Column(nullable = false)
     private Long price;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1024)
     private String giftUrl;
 
-    @Column(nullable = false, length = 512)
+    @Column(nullable = false, length = 1024)
     private String giftImageUrl;
 
     @Builder
