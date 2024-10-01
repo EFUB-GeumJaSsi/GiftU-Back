@@ -59,7 +59,7 @@ public class Funding extends BaseTimeEntity {
     @Column
     private Long nowMoney;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length=1024)
     private String fundingImageUrl;
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.ALL, orphanRemoval = true)
